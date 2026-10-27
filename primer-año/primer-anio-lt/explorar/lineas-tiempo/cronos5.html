@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRONO5 - De 476 d.C. a 1000 d.C.</title>
+<style>
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0a0a0a;
+    color: #eee;
+    overflow: hidden;
+}
+header {
+    background: #1a1a1a;
+    border-bottom: 2px solid #d4af37;
+    padding: 15px 20px;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+header h1 {
+    margin: 0;
+    color: #d4af37;
+    font-size: 1.6rem;
+}
+header p {
+    margin: 5px 0 0;
+    font-size: 0.85rem;
+    color: #ccc;
+}
+.btn-volver {
+    position: fixed;
+    top: 15px;
+    left: 20px;
+    background: rgba(0,0,0,0.6);
+    color: #d4af37;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    z-index: 101;
+    border: 1px solid #d4af37;
+}
+.btn-volver:hover {
+    background: #d4af37;
+    color: black;
+}
+.btn-inicio {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    background: rgba(0,0,0,0.6);
+    color: #d4af37;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    z-index: 101;
+    border: 1px solid #d4af37;
+}
+.btn-inicio:hover {
+    background: #d4af37;
+    color: black;
+}
+.timeline-wrapper {
+    position: relative;
+    top: 100px;
+    width: 100%;
+    height: calc(100vh - 100px);
+    overflow-x: auto;
+    overflow-y: hidden;
+    cursor: grab;
+}
+.timeline-wrapper:active {
+    cursor: grabbing;
+}
+.timeline {
+    position: relative;
+    min-width: max-content;
+    height: 630px;
+    margin: 0 60px;
+}
+.linea-central {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: #d4af37;
+    border-radius: 2px;
+    z-index: 1;
+}
+.evento {
+    position: absolute;
+    top: 40px;
+    transform: translateX(-50%);
+    text-align: center;
+    cursor: pointer;
+    z-index: 2;
+}
+.punto {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+    margin: 0 auto;
+    transition: transform 0.2s;
+}
+.punto:hover {
+    transform: scale(1.3);
+}
+/* Colores de los puntos según período */
+.transicion { background: #9E9E9E; }
+.islam { background: #2E8B57; }
+.carolingio { background: #CD7F32; }
+.info {
+    position: absolute;
+    width: 140px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    pointer-events: none;
+}
+.fecha {
+    font-size: 0.75rem;
+    color: #ddd;
+    margin-bottom: 3px;
+}
+.titulo {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #fff;
+    line-height: 1.2;
+}
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-contenido {
+    background: #1e1e1e;
+    border-left: 5px solid #d4af37;
+    max-width: 500px;
+    width: 90%;
+    padding: 20px;
+    border-radius: 12px;
+    animation: fadeIn 0.2s;
+}
+.modal-contenido h2 {
+    color: #d4af37;
+    margin-top: 0;
+}
+.modal-contenido h3 {
+    color: #00BFFF;
+}
+.modal-contenido p {
+    line-height: 1.5;
+    color: #ddd;
+}
+.cerrar {
+    background: #d4af37;
+    color: black;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    margin-top: 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95);}
+    to { opacity: 1; transform: scale(1);}
+}
+.nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.7);
+    color: #d4af37;
+    border: 1px solid #d4af37;
+    font-size: 2rem;
+    width: 45px;
+    height: 80px;
+    border-radius: 12px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+.nav-btn:hover {
+    background: #d4af37;
+    color: black;
+}
+.left-btn {
+    left: 10px;
+}
+.right-btn {
+    right: 10px;
+}
+.leyenda {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    background: rgba(0,0,0,0.75);
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    z-index: 15;
+    backdrop-filter: blur(5px);
+}
+.item-leyenda {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.cor {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+.frame-imagen {
+    position: absolute;
+    width: 307px;
+    height: 192px;
+    border: 2px solid #d4af37;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    transition: box-shadow 0.2s;
+}
+.frame-imagen:hover {
+    box-shadow: 0 4px 25px rgba(212,175,55,0.5);
+}
+.frame-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s;
+}
+.frame-imagen:hover img {
+    transform: scale(1.05);
+}
+#modalImagen {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    cursor: zoom-out;
+}
+#modalImagen img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+    display: block;
+    animation: fadeIn 0.2s;
+}
+@media (max-width: 700px) {
+    .nav-btn { width: 35px; height: 60px; font-size: 1.5rem; }
+    .evento { top: 35px; }
+    .linea-central { top: 35px; }
+    .timeline { height: 420px; }
+}
+</style>
+</head>
+<body>
+<header>
+    <h1>DE LA CAÍDA DE ROMA A LA EUROPA FEUDAL (476 d.C. – 1000 d.C.)</h1>
+    <p>Desliza horizontalmente o usa los botones laterales. Toca los puntos para más información.</p>
+</header>
+<a href="index.html" class="btn-volver">← Líneas de tiempo</a>
+<a href="../../../../index.html" class="btn-inicio">🏠 Inicio</a>
+
+<div class="nav-btn left-btn" id="scrollLeft">❮</div>
+<div class="nav-btn right-btn" id="scrollRight">❯</div>
+
+<div class="timeline-wrapper" id="timelineWrapper">
+    <div class="timeline" id="timeline"></div>
+</div>
+
+<div class="leyenda">
+    <div class="item-leyenda"><div class="cor transicion"></div>Transición y reinos germánicos</div>
+    <div class="item-leyenda"><div class="cor islam"></div>Expansión del islam y Bizancio</div>
+    <div class="item-leyenda"><div class="cor carolingio"></div>Imperio carolingio y feudalismo</div>
+</div>
+
+<div class="modal" id="modal">
+    <div class="modal-contenido">
+        <h2 id="modalFecha"></h2>
+        <h3 id="modalTitulo"></h3>
+        <p id="modalTexto"></p>
+        <button class="cerrar" onclick="cerrarModal()">Cerrar</button>
+    </div>
+</div>
+
+<div id="modalImagen" onclick="cerrarModalImagen()">
+    <img id="modalImagenImg" src="" alt="">
+</div>
+
+<script>
+// EVENTOS SEGÚN CRONOLOGÍA DILECER (CRONO5)
+const eventos = [
+    { fecha: "476 d.C.", titulo: "Caída del Imperio romano de Occidente", tipo: "transicion", texto: "Odoacro depone a Rómulo Augústulo; el Imperio se fragmenta en reinos germánicos." },
+    { fecha: "~480–547 d.C.", titulo: "Benito de Nursia", tipo: "transicion", texto: "Vida de san Benito, fundador del monacato occidental (Regla benedictina)." },
+    { fecha: "493 d.C.", titulo: "Reino ostrogodo en Italia", tipo: "transicion", texto: "Teodorico el Grande establece un reino ostrogodo independiente." },
+    { fecha: "527 d.C.", titulo: "Justiniano I", tipo: "islam", texto: "Justiniano asciende al trono bizantino e inicia la reconquista de Occidente." },
+    { fecha: "529 d.C.", titulo: "Montecasino", tipo: "transicion", texto: "Fundación del monasterio de Montecasino y cierre de la Academia de Atenas." },
+    { fecha: "532 d.C.", titulo: "Revuelta de Niká", tipo: "islam", texto: "Violenta rebelión en Constantinopla sofocada por Justiniano." },
+    { fecha: "537 d.C.", titulo: "Santa Sofía", tipo: "islam", texto: "Finalización de la basílica de Santa Sofía en Constantinopla." },
+    { fecha: "~540 d.C.", titulo: "Peste de Justiniano", tipo: "islam", texto: "Epidemia que asola el Mediterráneo y debilita el Imperio." },
+    { fecha: "568 d.C.", titulo: "Invasión lombarda", tipo: "transicion", texto: "Los lombardos invaden Italia, fragmentando la península." },
+    { fecha: "570 d.C.", titulo: "Nacimiento de Mahoma", tipo: "islam", texto: "Mahoma nace en La Meca, futuro profeta del islam." },
+    { fecha: "~580 d.C.", titulo: "Reinos germánicos", tipo: "transicion", texto: "Se consolidan los reinos visigodo, franco y ostrogodo." },
+    { fecha: "610 d.C.", titulo: "Predicación de Mahoma", tipo: "islam", texto: "Mahoma comienza a predicar el monoteísmo islámico." },
+    { fecha: "622 d.C.", titulo: "Hégira", tipo: "islam", texto: "Huida de Mahoma a Medina; inicio del calendario musulmán." },
+    { fecha: "632 d.C.", titulo: "Muerte de Mahoma", tipo: "islam", texto: "Fallece el profeta; comienza la expansión islámica." },
+    { fecha: "636 d.C.", titulo: "Yarmuk", tipo: "islam", texto: "Victoria árabe sobre Bizancio; Siria y Palestina caen bajo dominio islámico." },
+    { fecha: "642 d.C.", titulo: "Conquista musulmana de Egipto", tipo: "islam", texto: "Los árabes conquistan Egipto, debilitando aún más a Bizancio." },
+    { fecha: "661 d.C.", titulo: "Califato Omeya", tipo: "islam", texto: "Comienza la dinastía Omeya con capital en Damasco." },
+    { fecha: "~700 d.C.", titulo: "Rutas comerciales islámicas", tipo: "islam", texto: "El islam conecta Asia, África y Europa mediante una vasta red comercial." },
+    { fecha: "711 d.C.", titulo: "Invasión musulmana de Iberia", tipo: "islam", texto: "Tariq ibn Ziyad cruza el estrecho e inicia la conquista de la península ibérica." },
+    { fecha: "717–718 d.C.", titulo: "Asedio árabe a Constantinopla", tipo: "islam", texto: "La capital bizantina resiste el ataque omeya." },
+    { fecha: "732 d.C.", titulo: "Batalla de Poitiers", tipo: "carolingio", texto: "Carlos Martel detiene el avance musulmán hacia el norte de Francia." },
+    { fecha: "750 d.C.", titulo: "Califato Abasí", tipo: "islam", texto: "Los abasíes toman el poder y trasladan la capital a Bagdad." },
+    { fecha: "~750 d.C.", titulo: "Imperio maya clásico", tipo: "transicion", texto: "Mesoamérica alcanza su apogeo cultural y urbano." },
+    { fecha: "768 d.C.", titulo: "Carlomagno rey de los francos", tipo: "carolingio", texto: "Carlomagno inicia su reinado, que llevará al Imperio carolingio." },
+    { fecha: "793 d.C.", titulo: "Ataque vikingo a Lindisfarne", tipo: "carolingio", texto: "Comienzan las incursiones vikingas en Europa occidental." },
+    { fecha: "800 d.C.", titulo: "Coronación de Carlomagno", tipo: "carolingio", texto: "El papa León III corona a Carlomagno emperador en Roma." },
+    { fecha: "~800 d.C.", titulo: "Expansión del Imperio carolingio", tipo: "carolingio", texto: "Carlomagno unifica gran parte de Europa occidental." },
+    { fecha: "820 d.C.", titulo: "Redes vikingas", tipo: "carolingio", texto: "Los vikingos establecen rutas comerciales y de saqueo por toda Europa." },
+    { fecha: "843 d.C.", titulo: "Tratado de Verdún", tipo: "carolingio", texto: "División del Imperio carolingio entre los tres hijos de Ludovico Pío." },
+    { fecha: "~850 d.C.", titulo: "Tiahuanaco y Wari", tipo: "transicion", texto: "Auge de centros urbanos en los Andes centrales." },
+    { fecha: "862 d.C.", titulo: "Rus de Kiev", tipo: "carolingio", texto: "Formación inicial del Estado de la Rus, origen de Rusia, Ucrania y Bielorrusia." },
+    { fecha: "~900 d.C.", titulo: "Sistema feudal", tipo: "carolingio", texto: "Se intensifica el feudalismo en Europa occidental." },
+    { fecha: "910 d.C.", titulo: "Abadía de Cluny", tipo: "carolingio", texto: "Fundación de Cluny, centro de reforma monástica." },
+    { fecha: "~930 d.C.", titulo: "Colonización vikinga de Groenlandia", tipo: "carolingio", texto: "Erik el Rojo establece asentamientos nórdicos en Groenlandia." },
+    { fecha: "962 d.C.", titulo: "Sacro Imperio Romano Germánico", tipo: "carolingio", texto: "Otón I es coronado emperador, dando origen al Sacro Imperio." },
+    { fecha: "~980 d.C.", titulo: "Vikingos en América", tipo: "carolingio", texto: "Leif Erikson y otros exploradores nórdicos llegan a Vinland (Norteamérica)." },
+    { fecha: "987 d.C.", titulo: "Dinastía Capeto", tipo: "carolingio", texto: "Hugo Capeto inicia la dinastía que gobernará Francia durante siglos." },
+    { fecha: "1000 d.C.", titulo: "Europa feudal y expansión agrícola", tipo: "carolingio", texto: "Consolidación de las sociedades feudales y crecimiento de la producción agraria." }
+];
+
+const timeline = document.getElementById("timeline");
+const wrapper = document.getElementById("timelineWrapper");
+const startX = 150;
+const step = 135;
+
+eventos.forEach((ev, idx) => {
+    const eventoDiv = document.createElement("div");
+    eventoDiv.className = "evento";
+    const leftPos = startX + idx * step;
+    eventoDiv.style.left = leftPos + "px";
+    const punto = document.createElement("div");
+    punto.className = `punto ${ev.tipo}`;
+    eventoDiv.appendChild(punto);
+    const infoDiv = document.createElement("div");
+    infoDiv.className = "info";
+    const fechaSpan = document.createElement("div");
+    fechaSpan.className = "fecha";
+    fechaSpan.innerText = ev.fecha;
+    const tituloSpan = document.createElement("div");
+    tituloSpan.className = "titulo";
+    tituloSpan.innerText = ev.titulo;
+    infoDiv.appendChild(fechaSpan);
+    infoDiv.appendChild(tituloSpan);
+    eventoDiv.appendChild(infoDiv);
+    const offsetLevels = [25, 85, 50, 115];
+    const offsetY = offsetLevels[idx % offsetLevels.length];
+    infoDiv.style.top = (offsetY + 10) + "px";
+    eventoDiv.style.top = "0px";
+    const lineaConectora = document.createElement("div");
+    lineaConectora.style.position = "absolute";
+    lineaConectora.style.left = "50%";
+    lineaConectora.style.transform = "translateX(-50%)";
+    lineaConectora.style.top = "16px";
+    lineaConectora.style.width = "1px";
+    lineaConectora.style.height = (offsetY - 6) + "px";
+    lineaConectora.style.background = "cyan";
+    lineaConectora.style.pointerEvents = "none";
+    lineaConectora.style.zIndex = "1";
+    eventoDiv.appendChild(lineaConectora);
+    eventoDiv.addEventListener("click", () => { abrirModal(ev.fecha, ev.titulo, ev.texto); });
+    timeline.appendChild(eventoDiv);
+});
+
+// Períodos de CRONO5
+const periodos = [
+    { nombre: "Transición y reinos germánicos", desde: 0, hasta: 9, imagen: "1-tr.jpg" },
+    { nombre: "Expansión del islam y Bizancio", desde: 10, hasta: 22, imagen: "2-is.jpg" },
+    { nombre: "Imperio carolingio y feudalismo", desde: 23, hasta: 36, imagen: "3-ca.jpg" }
+];
+
+const bracketY = 200;
+periodos.forEach(p => {
+    const xIzq = startX + p.desde * step;
+    const xDer = startX + p.hasta * step;
+    const ancho = xDer - xIzq;
+    const esUnico = ancho === 0;
+    const bracketDiv = document.createElement("div");
+    bracketDiv.style.position = "absolute";
+    bracketDiv.style.left = xIzq + "px";
+    bracketDiv.style.top = bracketY + "px";
+    bracketDiv.style.width = ancho + "px";
+    bracketDiv.style.pointerEvents = "none";
+    if (!esUnico) {
+        const lineaH = document.createElement("div");
+        lineaH.style.position = "absolute";
+        lineaH.style.top = "0";
+        lineaH.style.left = "0";
+        lineaH.style.width = "100%";
+        lineaH.style.height = "1px";
+        lineaH.style.background = "cyan";
+        bracketDiv.appendChild(lineaH);
+        const tickIzq = document.createElement("div");
+        tickIzq.style.position = "absolute";
+        tickIzq.style.left = "0";
+        tickIzq.style.top = "-10px";
+        tickIzq.style.width = "1px";
+        tickIzq.style.height = "10px";
+        tickIzq.style.background = "cyan";
+        bracketDiv.appendChild(tickIzq);
+        const tickDer = document.createElement("div");
+        tickDer.style.position = "absolute";
+        tickDer.style.right = "0";
+        tickDer.style.top = "-10px";
+        tickDer.style.width = "1px";
+        tickDer.style.height = "10px";
+        tickDer.style.background = "cyan";
+        bracketDiv.appendChild(tickDer);
+    }
+    const etiqueta = document.createElement("div");
+    etiqueta.style.position = "absolute";
+    etiqueta.style.top = "8px";
+    etiqueta.style.left = "50%";
+    etiqueta.style.transform = "translateX(-50%)";
+    etiqueta.style.color = "white";
+    etiqueta.style.fontSize = "0.95rem";
+    etiqueta.style.fontWeight = "bold";
+    etiqueta.style.whiteSpace = "nowrap";
+    etiqueta.innerText = p.nombre;
+    bracketDiv.appendChild(etiqueta);
+    const imgSrc = "../../imagenes/" + p.imagen;
+    const frameAncho = 307;
+    const centroLocal = ancho / 2;
+    const frame = document.createElement("div");
+    frame.className = "frame-imagen";
+    frame.style.left = (centroLocal - frameAncho / 2) + "px";
+    frame.style.top = "45px";
+    const imgEl = document.createElement("img");
+    imgEl.src = imgSrc;
+    imgEl.alt = p.nombre;
+    frame.appendChild(imgEl);
+    frame.addEventListener("click", () => abrirModalImagen(imgSrc));
+    bracketDiv.appendChild(frame);
+    timeline.appendChild(bracketDiv);
+});
+
+const totalWidth = startX + (eventos.length - 1) * step + 200;
+timeline.style.width = totalWidth + "px";
+timeline.style.minWidth = totalWidth + "px";
+
+const NEXT_CRONO = "cronos6.html";
+const leftBtn = document.getElementById("scrollLeft");
+const rightBtn = document.getElementById("scrollRight");
+const scrollStep = 300;
+
+leftBtn.addEventListener("click", () => { wrapper.scrollBy({ left: -scrollStep, behavior: "smooth" }); });
+rightBtn.addEventListener("click", () => {
+    const tl = document.getElementById("timeline");
+    const maxScroll = tl.scrollWidth - wrapper.getBoundingClientRect().width + 120;
+    const alFinal = wrapper.scrollLeft >= maxScroll - 20;
+    if (alFinal && NEXT_CRONO) {
+        window.location.href = NEXT_CRONO;
+    } else {
+        wrapper.scrollLeft += scrollStep;
+    }
+});
+wrapper.addEventListener("scroll", () => {
+    const alFinal = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 10;
+    rightBtn.style.background = alFinal ? "rgba(212,175,55,0.5)" : "rgba(0,0,0,0.7)";
+    rightBtn.title = alFinal ? "Ir a Cronos 6 →" : "";
+});
+
+let isDown = false, startXpos, scrollLeftPos;
+wrapper.addEventListener("mousedown", (e) => { isDown = true; startXpos = e.pageX - wrapper.offsetLeft; scrollLeftPos = wrapper.scrollLeft; });
+wrapper.addEventListener("mouseleave", () => { isDown = false; });
+wrapper.addEventListener("mouseup", () => { isDown = false; });
+wrapper.addEventListener("mousemove", (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - wrapper.offsetLeft; const walk = (x - startXpos) * 1.5; wrapper.scrollLeft = scrollLeftPos - walk; });
+let touchStartX, touchScrollLeft;
+wrapper.addEventListener("touchstart", (e) => { touchStartX = e.touches[0].pageX - wrapper.offsetLeft; touchScrollLeft = wrapper.scrollLeft; }, { passive: true });
+wrapper.addEventListener("touchmove", (e) => { const x = e.touches[0].pageX - wrapper.offsetLeft; const walk = (x - touchStartX) * 1.5; wrapper.scrollLeft = touchScrollLeft - walk; }, { passive: true });
+
+function abrirModalImagen(src) { document.getElementById("modalImagenImg").src = src; document.getElementById("modalImagen").style.display = "flex"; }
+function cerrarModalImagen() { document.getElementById("modalImagen").style.display = "none"; }
+function abrirModal(fecha, titulo, texto) { document.getElementById("modalFecha").innerText = fecha; document.getElementById("modalTitulo").innerText = titulo; document.getElementById("modalTexto").innerText = texto; document.getElementById("modal").style.display = "flex"; }
+function cerrarModal() { document.getElementById("modal").style.display = "none"; }
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") { cerrarModal(); cerrarModalImagen(); } });
+</script>
+</body>
+</html>

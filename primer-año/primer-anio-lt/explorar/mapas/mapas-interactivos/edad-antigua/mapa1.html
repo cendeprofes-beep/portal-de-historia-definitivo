@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa 1 — Egipto Antiguo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #222;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #eee;
+      min-height: 100vh;
+    }
+
+    .barra-superior {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      background: rgba(20, 20, 20, 0.95);
+      border-bottom: 2px solid #d4af37;
+      padding: 8px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+    .nav-btn {
+      background: rgba(0,0,0,0.6);
+      color: #d4af37;
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      border: 1px solid #d4af37;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover { background: #d4af37; color: black; }
+    .barra-titulo {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #d4af37;
+      text-align: center;
+      flex: 1;
+      padding: 0 10px;
+    }
+
+    .contenido {
+      padding: 65px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .instrucciones {
+      font-size: 0.82rem;
+      color: #aaa;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+    .instrucciones span { color: #d4af37; }
+
+    /* Mapa vertical: limitamos el ancho para que no ocupe toda la pantalla */
+    .mapa-container {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      max-width: 700px;
+    }
+    .mapa-container img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .marker {
+      position: absolute;
+      width: 2.5%;
+      padding-bottom: 2.5%;
+      height: 0;
+      background: red;
+      border-radius: 50%;
+      border: 2px solid white;
+      cursor: pointer;
+      box-shadow: 0 0 10px red;
+      transform: translate(-50%, -50%);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: block;
+      text-decoration: none;
+    }
+    .marker:hover {
+      transform: translate(-50%, -50%) scale(1.4);
+      box-shadow: 0 0 18px rgba(255,60,60,0.9);
+    }
+    .marker::after {
+      content: attr(data-title);
+      position: absolute;
+      bottom: 120%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.92);
+      color: #f9e294;
+      font-size: 0.72rem;
+      white-space: nowrap;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #d4af37;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: normal;
+      z-index: 100;
+    }
+    .marker:hover::after { opacity: 1; }
+
+    .firma {
+      font-size: 0.82rem;
+      color: gold;
+      font-weight: bold;
+      text-align: center;
+      padding: 20px 0 10px;
+    }
+
+    /* === FLECHA INFERIOR TITILANTE (verde inglés) === */
+    .marker::before {
+      content: "▼";
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      color: #2E8B57;
+      text-shadow: 0 0 5px red;
+      font-weight: bold;
+      pointer-events: none;
+      white-space: nowrap;
+      animation: titilarFlecha 1.2s infinite ease-in-out;
+    }
+
+    @keyframes titilarFlecha {
+      0% { opacity: 0.3; transform: translateX(-50%) scale(0.8); }
+      50% { opacity: 1; transform: translateX(-50%) scale(1.2); }
+      100% { opacity: 0.3; transform: translateX(-50%) scale(0.8); }
+    }
+
+    /* === ROMBO DE 4 TRIÁNGULOS (verde inglés) === */
+    .marker .triangulo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+      font-size: 0;
+      line-height: 0;
+    }
+
+    .marker .triangulo.arriba {
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 10px solid #2E8B57;
+      transform: translate(-50%, -50%) translateY(-18px);
+    }
+
+    .marker .triangulo.abajo {
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 10px solid #2E8B57;
+      transform: translate(-50%, -50%) translateY(18px);
+    }
+
+    .marker .triangulo.izquierda {
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-right: 10px solid #2E8B57;
+      transform: translate(-50%, -50%) translateX(-18px);
+    }
+
+    .marker .triangulo.derecha {
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-left: 10px solid #2E8B57;
+      transform: translate(-50%, -50%) translateX(18px);
+    }
+
+    /* Animación solo de opacidad y sombra (no afecta position) */
+    .marker .triangulo {
+      animation: titilarRombo 1.2s infinite ease-in-out;
+    }
+
+    @keyframes titilarRombo {
+      0% { opacity: 0.3; filter: drop-shadow(0 0 2px #004d26); }
+      50% { opacity: 1; filter: drop-shadow(0 0 6px #2E8B57); }
+      100% { opacity: 0.3; filter: drop-shadow(0 0 2px #004d26); }
+    }
+
+    /* Ajuste para móviles: triángulos más grandes y flecha más grande */
+    @media (max-width: 768px) {
+      .marker::before {
+        font-size: 20px;
+        bottom: -26px;
+      }
+      .marker .triangulo.arriba, .marker .triangulo.abajo {
+        border-left-width: 8px;
+        border-right-width: 8px;
+      }
+      .marker .triangulo.arriba { border-bottom-width: 13px; transform: translate(-50%, -50%) translateY(-24px); }
+      .marker .triangulo.abajo { border-top-width: 13px; transform: translate(-50%, -50%) translateY(24px); }
+      .marker .triangulo.izquierda, .marker .triangulo.derecha {
+        border-top-width: 8px;
+        border-bottom-width: 8px;
+      }
+      .marker .triangulo.izquierda { border-right-width: 13px; transform: translate(-50%, -50%) translateX(-24px); }
+      .marker .triangulo.derecha { border-left-width: 13px; transform: translate(-50%, -50%) translateX(24px); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="barra-superior">
+  <a href="../../../lineas-tiempo/cronos2.html" class="nav-btn">← Volver</a>
+  <div class="barra-titulo">Egipto Antiguo</div>
+  <a href="../../../../../../index.html" class="nav-btn">🏠 Inicio</a>
+</div>
+
+<div class="contenido">
+
+  <p class="instrucciones">Pasá el mouse sobre un punto para ver el nombre. <span>Hacé clic</span> para ver el video.</p>
+
+  <div class="mapa-container">
+
+    <img src="mapa1.png" alt="Mapa del Egipto Antiguo">
+
+    <!-- PIRÁMIDES -->
+    <a class="marker" href="https://www.youtube.com/watch?v=9vL8ahGQko8" target="_blank"
+       data-title="Construyendo las pirámides"
+       style="left:27.28%; top:23.62%;"></a>
+
+    <!-- NARMER -->
+    <a class="marker" href="https://www.youtube.com/watch?v=psyrx3nuNaY" target="_blank"
+       data-title="Narmer: el primer faraón del Egipto Antiguo"
+       style="left:36.78%; top:24.05%;"></a>
+
+    <!-- HIERACÓMPOLIS -->
+    <a class="marker" href="https://www.youtube.com/watch?v=nUBjTw6dR7s" target="_blank"
+       data-title="Hieracómpolis: antigua capital del Alto Egipto"
+       style="left:62.39%; top:68.09%;"></a>
+
+    <!-- REINO MEDIO -->
+    <a class="marker" href="https://www.youtube.com/watch?v=jKs2xAvsj9g" target="_blank"
+       data-title="El reino medio y el renacimiento del poder central en Egipto"
+       style="left:57.28%; top:62.55%;"></a>
+
+    <!-- HICSOS -->
+    <a class="marker" href="https://www.youtube.com/watch?v=nJPwKEN6_nU" target="_blank"
+       data-title="Los hicsos y su dominio del Bajo Egipto durante el Segundo Período Intermedio"
+       style="left:44.11%; top:18.04%;"></a>
+
+    <!-- AMÓN -->
+    <a class="marker" href="https://www.youtube.com/watch?v=-gJJMKBVSGU" target="_blank"
+       data-title="Amón: el dios más importante de Egipto durante el Reino Nuevo"
+       style="left:64.94%; top:61.5%;"></a>
+
+    <!-- AKHENATÓN -->
+    <a class="marker" href="https://www.youtube.com/watch?v=NQsJFeE8w7M" target="_blank"
+       data-title="Akhenatón: El primer faraón monoteísta de la historia"
+       style="left:36.89%; top:45.67%;"></a>
+
+    <!-- ABYDOS -->
+    <a class="marker" href="https://www.youtube.com/watch?v=Qn4NK5KtKDI" target="_blank"
+       data-title="Abydos y la celebración de los misterios de Osiris"
+       style="left:49.67%; top:57.84%;"></a>
+
+    <!-- FIESTA DE OPET -->
+    <a class="marker" href="https://www.youtube.com/watch?v=cEICsPtVc5k" target="_blank"
+       data-title="La fiesta de Opet en el Egipto Antiguo"
+       style="left:62.39%; top:61.03%;"></a>
+
+  </div>
+
+  <div class="firma">
+    Página diseñada por el Prof. de Historia Claudio Damián Sacco, con asistencia técnica mayoritaria de DeepSeek y minoritaria de ChatGPT y Gemini.
+  </div>
+
+</div>
+
+<script>
+  // Agrega los cuatro triángulos (rombo) alrededor de cada marcador
+  document.querySelectorAll('.marker').forEach(function(marker) {
+    var arriba = document.createElement('div');
+    arriba.className = 'triangulo arriba';
+    var abajo = document.createElement('div');
+    abajo.className = 'triangulo abajo';
+    var izquierda = document.createElement('div');
+    izquierda.className = 'triangulo izquierda';
+    var derecha = document.createElement('div');
+    derecha.className = 'triangulo derecha';
+    marker.appendChild(arriba);
+    marker.appendChild(abajo);
+    marker.appendChild(izquierda);
+    marker.appendChild(derecha);
+  });
+</script>
+
+</body>
+</html>

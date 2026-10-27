@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRONO6 - De 1000 d.C. a 1453 d.C.</title>
+<style>
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0a0a0a;
+    color: #eee;
+    overflow: hidden;
+}
+header {
+    background: #1a1a1a;
+    border-bottom: 2px solid #d4af37;
+    padding: 15px 20px;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+header h1 {
+    margin: 0;
+    color: #d4af37;
+    font-size: 1.6rem;
+}
+header p {
+    margin: 5px 0 0;
+    font-size: 0.85rem;
+    color: #ccc;
+}
+.btn-volver {
+    position: fixed;
+    top: 15px;
+    left: 20px;
+    background: rgba(0,0,0,0.6);
+    color: #d4af37;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    z-index: 101;
+    border: 1px solid #d4af37;
+}
+.btn-volver:hover {
+    background: #d4af37;
+    color: black;
+}
+.btn-inicio {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    background: rgba(0,0,0,0.6);
+    color: #d4af37;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    z-index: 101;
+    border: 1px solid #d4af37;
+}
+.btn-inicio:hover {
+    background: #d4af37;
+    color: black;
+}
+.timeline-wrapper {
+    position: relative;
+    top: 100px;
+    width: 100%;
+    height: calc(100vh - 100px);
+    overflow-x: auto;
+    overflow-y: hidden;
+    cursor: grab;
+}
+.timeline-wrapper:active {
+    cursor: grabbing;
+}
+.timeline {
+    position: relative;
+    min-width: max-content;
+    height: 630px;
+    margin: 0 60px;
+}
+.linea-central {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: #d4af37;
+    border-radius: 2px;
+    z-index: 1;
+}
+.evento {
+    position: absolute;
+    top: 40px;
+    transform: translateX(-50%);
+    text-align: center;
+    cursor: pointer;
+    z-index: 2;
+}
+.punto {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+    margin: 0 auto;
+    transition: transform 0.2s;
+}
+.punto:hover {
+    transform: scale(1.3);
+}
+/* Colores de los puntos según período */
+.expansion { background: #CD7F32; }
+.cruzadas { background: #2E8B57; }
+.crisis { background: #9E9E9E; }
+.info {
+    position: absolute;
+    width: 140px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    pointer-events: none;
+}
+.fecha {
+    font-size: 0.75rem;
+    color: #ddd;
+    margin-bottom: 3px;
+}
+.titulo {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #fff;
+    line-height: 1.2;
+}
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-contenido {
+    background: #1e1e1e;
+    border-left: 5px solid #d4af37;
+    max-width: 500px;
+    width: 90%;
+    padding: 20px;
+    border-radius: 12px;
+    animation: fadeIn 0.2s;
+}
+.modal-contenido h2 {
+    color: #d4af37;
+    margin-top: 0;
+}
+.modal-contenido h3 {
+    color: #00BFFF;
+}
+.modal-contenido p {
+    line-height: 1.5;
+    color: #ddd;
+}
+.cerrar {
+    background: #d4af37;
+    color: black;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    margin-top: 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95);}
+    to { opacity: 1; transform: scale(1);}
+}
+.nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.7);
+    color: #d4af37;
+    border: 1px solid #d4af37;
+    font-size: 2rem;
+    width: 45px;
+    height: 80px;
+    border-radius: 12px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+.nav-btn:hover {
+    background: #d4af37;
+    color: black;
+}
+.left-btn {
+    left: 10px;
+}
+.right-btn {
+    right: 10px;
+}
+.leyenda {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    background: rgba(0,0,0,0.75);
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    z-index: 15;
+    backdrop-filter: blur(5px);
+}
+.item-leyenda {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.cor {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+.frame-imagen {
+    position: absolute;
+    width: 307px;
+    height: 192px;
+    border: 2px solid #d4af37;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    transition: box-shadow 0.2s;
+}
+.frame-imagen:hover {
+    box-shadow: 0 4px 25px rgba(212,175,55,0.5);
+}
+.frame-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s;
+}
+.frame-imagen:hover img {
+    transform: scale(1.05);
+}
+#modalImagen {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    cursor: zoom-out;
+}
+#modalImagen img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+    display: block;
+    animation: fadeIn 0.2s;
+}
+@media (max-width: 700px) {
+    .nav-btn { width: 35px; height: 60px; font-size: 1.5rem; }
+    .evento { top: 35px; }
+    .linea-central { top: 35px; }
+    .timeline { height: 420px; }
+}
+</style>
+</head>
+<body>
+<header>
+    <h1>DE LA EXPANSIÓN FEUDAL A LA CAÍDA DE CONSTANTINOPLA (1000 d.C. – 1453 d.C.)</h1>
+    <p>Desliza horizontalmente o usa los botones laterales. Toca los puntos para más información.</p>
+</header>
+<a href="index.html" class="btn-volver">← Líneas de tiempo</a>
+<a href="../../../../index.html" class="btn-inicio">🏠 Inicio</a>
+
+<div class="nav-btn left-btn" id="scrollLeft">❮</div>
+<div class="nav-btn right-btn" id="scrollRight">❯</div>
+
+<div class="timeline-wrapper" id="timelineWrapper">
+    <div class="timeline" id="timeline"></div>
+</div>
+
+<div class="leyenda">
+    <div class="item-leyenda"><div class="cor expansion"></div>Expansión feudal y urbana</div>
+    <div class="item-leyenda"><div class="cor cruzadas"></div>Cruzadas y contacto con Oriente</div>
+    <div class="item-leyenda"><div class="cor crisis"></div>Crisis bajomedieval</div>
+</div>
+
+<div class="modal" id="modal">
+    <div class="modal-contenido">
+        <h2 id="modalFecha"></h2>
+        <h3 id="modalTitulo"></h3>
+        <p id="modalTexto"></p>
+        <button class="cerrar" onclick="cerrarModal()">Cerrar</button>
+    </div>
+</div>
+
+<div id="modalImagen" onclick="cerrarModalImagen()">
+    <img id="modalImagenImg" src="" alt="">
+</div>
+
+<script>
+// EVENTOS SEGÚN CRONOLOGÍA DILECER (CRONO6)
+const eventos = [
+    { fecha: "1000 d.C.", titulo: "Expansión agrícola y demográfica", tipo: "expansion", texto: "Europa medieval experimenta un crecimiento agrario, mejora de técnicas y aumento de la población." },
+    { fecha: "~1000 d.C.", titulo: "Auge de ciudades mayas tardías", tipo: "expansion", texto: "En Mesoamérica, las ciudades mayas alcanzan su último gran período de desarrollo." },
+    { fecha: "1001 d.C.", titulo: "Leif Erikson en América", tipo: "expansion", texto: "Según las sagas nórdicas, Leif Erikson llega a Vinland (Norteamérica)." },
+    { fecha: "1054 d.C.", titulo: "Cisma de Oriente", tipo: "expansion", texto: "Separación definitiva entre la Iglesia católica romana y la ortodoxa oriental." },
+    { fecha: "1066 d.C.", titulo: "Batalla de Hastings", tipo: "expansion", texto: "Guillermo el Conquistador vence a los anglosajones e inicia la conquista normanda de Inglaterra." },
+    { fecha: "1071 d.C.", titulo: "Manzikert", tipo: "expansion", texto: "Derrota bizantina frente a los turcos selyúcidas, que avanzan en Anatolia." },
+    { fecha: "1095 d.C.", titulo: "Convocatoria de la Primera Cruzada", tipo: "cruzadas", texto: "El papa Urbano II llama a los cristianos a liberar Tierra Santa." },
+    { fecha: "1099 d.C.", titulo: "Toma de Jerusalén", tipo: "cruzadas", texto: "Los cruzados conquistan Jerusalén y establecen reinos cristianos en Oriente." },
+    { fecha: "~1100 d.C.", titulo: "Renacimiento urbano y comercial", tipo: "expansion", texto: "Resurgimiento de las ciudades y del comercio en Europa occidental." },
+    { fecha: "1122 d.C.", titulo: "Concordato de Worms", tipo: "expansion", texto: "Acuerdo que pone fin a la Querella de las Investiduras, separando poder laico y eclesiástico." },
+    { fecha: "1147–1149 d.C.", titulo: "Segunda Cruzada", tipo: "cruzadas", texto: "Cruzada liderada por Luis VII de Francia y Conrado III de Alemania; fracasa en su objetivo." },
+    { fecha: "1170 d.C.", titulo: "Asesinato de Tomás Becket", tipo: "expansion", texto: "El arzobispo de Canterbury es asesinado por orden del rey Enrique II." },
+    { fecha: "1187 d.C.", titulo: "Saladino recupera Jerusalén", tipo: "cruzadas", texto: "Tras la batalla de los Cuernos de Hattin, Saladino toma Jerusalén para el islam." },
+    { fecha: "1189–1192 d.C.", titulo: "Tercera Cruzada", tipo: "cruzadas", texto: "Federico Barbarroja, Felipe Augusto y Ricardo Corazón de León participan sin lograr recuperar Jerusalén." },
+    { fecha: "1200 d.C.", titulo: "Auge de universidades medievales", tipo: "expansion", texto: "Surgen centros de estudio como París, Bolonia, Oxford y Salamanca." },
+    { fecha: "1204 d.C.", titulo: "Saqueo de Constantinopla", tipo: "cruzadas", texto: "Los cruzados saquean la capital bizantina durante la Cuarta Cruzada." },
+    { fecha: "1215 d.C.", titulo: "Carta Magna", tipo: "expansion", texto: "Juan sin Tierra firma la Carta Magna, limitando el poder real en Inglaterra." },
+    { fecha: "~1220 d.C.", titulo: "Expansión del Imperio mongol", tipo: "crisis", texto: "Gengis Kan unifica las tribus mongolas y comienza la conquista de Asia." },
+    { fecha: "1230 d.C.", titulo: "Imperio de Mali", tipo: "expansion", texto: "Mali se consolida como el principal estado comercial de África occidental." },
+    { fecha: "1250 d.C.", titulo: "Auge comercial de Venecia y Génova", tipo: "expansion", texto: "Las repúblicas marítimas italianas dominan el comercio mediterráneo." },
+    { fecha: "1271–1295 d.C.", titulo: "Viajes de Marco Polo", tipo: "crisis", texto: "Marco Polo viaja a Asia, estableciendo contacto entre Europa y el Imperio mongol." },
+    { fecha: "1299 d.C.", titulo: "Fundación del Imperio otomano", tipo: "crisis", texto: "Osman I establece el principado que dará origen al Imperio otomano." },
+    { fecha: "1300 d.C.", titulo: "Grandes ciudades europeas", tipo: "expansion", texto: "Florencia, París, Londres y otras ciudades alcanzan un notable desarrollo." },
+    { fecha: "~1300 d.C.", titulo: "Expansión mexica", tipo: "expansion", texto: "Los mexicas comienzan su expansión en el valle de México." },
+    { fecha: "1337 d.C.", titulo: "Inicio de la Guerra de los Cien Años", tipo: "crisis", texto: "Conflicto entre Francia e Inglaterra por el trono francés." },
+    { fecha: "1347–1351 d.C.", titulo: "Peste Negra", tipo: "crisis", texto: "La epidemia de peste bubónica mata a un tercio de la población europea." },
+    { fecha: "1368 d.C.", titulo: "Dinastía Ming en China", tipo: "crisis", texto: "Zhu Yuanzhang funda la dinastía Ming, que gobernará China hasta 1644." },
+    { fecha: "1378–1417 d.C.", titulo: "Cisma de Occidente", tipo: "crisis", texto: "Dos (y luego tres) papas se disputan la legitimidad, dividiendo a la cristiandad." },
+    { fecha: "1405–1433 d.C.", titulo: "Viajes de Zheng He", tipo: "crisis", texto: "El almirante chino explora el océano Índico y África oriental." },
+    { fecha: "1429 d.C.", titulo: "Juana de Arco", tipo: "crisis", texto: "Juana de Arco lidera al ejército francés en la Guerra de los Cien Años." },
+    { fecha: "1453 d.C.", titulo: "Caída de Constantinopla", tipo: "crisis", texto: "Los otomanos conquistan Constantinopla, poniendo fin al Imperio bizantino y marcando el fin de la Edad Media." }
+];
+
+const timeline = document.getElementById("timeline");
+const wrapper = document.getElementById("timelineWrapper");
+const startX = 150;
+const step = 135;
+
+eventos.forEach((ev, idx) => {
+    const eventoDiv = document.createElement("div");
+    eventoDiv.className = "evento";
+    const leftPos = startX + idx * step;
+    eventoDiv.style.left = leftPos + "px";
+    const punto = document.createElement("div");
+    punto.className = `punto ${ev.tipo}`;
+    eventoDiv.appendChild(punto);
+    const infoDiv = document.createElement("div");
+    infoDiv.className = "info";
+    const fechaSpan = document.createElement("div");
+    fechaSpan.className = "fecha";
+    fechaSpan.innerText = ev.fecha;
+    const tituloSpan = document.createElement("div");
+    tituloSpan.className = "titulo";
+    tituloSpan.innerText = ev.titulo;
+    infoDiv.appendChild(fechaSpan);
+    infoDiv.appendChild(tituloSpan);
+    eventoDiv.appendChild(infoDiv);
+    const offsetLevels = [25, 85, 50, 115];
+    const offsetY = offsetLevels[idx % offsetLevels.length];
+    infoDiv.style.top = (offsetY + 10) + "px";
+    eventoDiv.style.top = "0px";
+    const lineaConectora = document.createElement("div");
+    lineaConectora.style.position = "absolute";
+    lineaConectora.style.left = "50%";
+    lineaConectora.style.transform = "translateX(-50%)";
+    lineaConectora.style.top = "16px";
+    lineaConectora.style.width = "1px";
+    lineaConectora.style.height = (offsetY - 6) + "px";
+    lineaConectora.style.background = "cyan";
+    lineaConectora.style.pointerEvents = "none";
+    lineaConectora.style.zIndex = "1";
+    eventoDiv.appendChild(lineaConectora);
+    eventoDiv.addEventListener("click", () => { abrirModal(ev.fecha, ev.titulo, ev.texto); });
+    timeline.appendChild(eventoDiv);
+});
+
+// Períodos de CRONO6
+const periodos = [
+    { nombre: "Expansión feudal y urbana", desde: 0, hasta: 12, imagen: "1-feu.jpg" },
+    { nombre: "Cruzadas y contacto con Oriente", desde: 13, hasta: 19, imagen: "2-cru.jpg" },
+    { nombre: "Crisis bajomedieval", desde: 20, hasta: 31, imagen: "3-cri.jpg" }
+];
+
+const bracketY = 200;
+periodos.forEach(p => {
+    const xIzq = startX + p.desde * step;
+    const xDer = startX + p.hasta * step;
+    const ancho = xDer - xIzq;
+    const esUnico = ancho === 0;
+    const bracketDiv = document.createElement("div");
+    bracketDiv.style.position = "absolute";
+    bracketDiv.style.left = xIzq + "px";
+    bracketDiv.style.top = bracketY + "px";
+    bracketDiv.style.width = ancho + "px";
+    bracketDiv.style.pointerEvents = "none";
+    if (!esUnico) {
+        const lineaH = document.createElement("div");
+        lineaH.style.position = "absolute";
+        lineaH.style.top = "0";
+        lineaH.style.left = "0";
+        lineaH.style.width = "100%";
+        lineaH.style.height = "1px";
+        lineaH.style.background = "cyan";
+        bracketDiv.appendChild(lineaH);
+        const tickIzq = document.createElement("div");
+        tickIzq.style.position = "absolute";
+        tickIzq.style.left = "0";
+        tickIzq.style.top = "-10px";
+        tickIzq.style.width = "1px";
+        tickIzq.style.height = "10px";
+        tickIzq.style.background = "cyan";
+        bracketDiv.appendChild(tickIzq);
+        const tickDer = document.createElement("div");
+        tickDer.style.position = "absolute";
+        tickDer.style.right = "0";
+        tickDer.style.top = "-10px";
+        tickDer.style.width = "1px";
+        tickDer.style.height = "10px";
+        tickDer.style.background = "cyan";
+        bracketDiv.appendChild(tickDer);
+    }
+    const etiqueta = document.createElement("div");
+    etiqueta.style.position = "absolute";
+    etiqueta.style.top = "8px";
+    etiqueta.style.left = "50%";
+    etiqueta.style.transform = "translateX(-50%)";
+    etiqueta.style.color = "white";
+    etiqueta.style.fontSize = "0.95rem";
+    etiqueta.style.fontWeight = "bold";
+    etiqueta.style.whiteSpace = "nowrap";
+    etiqueta.innerText = p.nombre;
+    bracketDiv.appendChild(etiqueta);
+    const imgSrc = "../../imagenes/" + p.imagen;
+    const frameAncho = 307;
+    const centroLocal = ancho / 2;
+    const frame = document.createElement("div");
+    frame.className = "frame-imagen";
+    frame.style.left = (centroLocal - frameAncho / 2) + "px";
+    frame.style.top = "45px";
+    const imgEl = document.createElement("img");
+    imgEl.src = imgSrc;
+    imgEl.alt = p.nombre;
+    frame.appendChild(imgEl);
+    frame.addEventListener("click", () => abrirModalImagen(imgSrc));
+    bracketDiv.appendChild(frame);
+    timeline.appendChild(bracketDiv);
+});
+
+const totalWidth = startX + (eventos.length - 1) * step + 200;
+timeline.style.width = totalWidth + "px";
+timeline.style.minWidth = totalWidth + "px";
+
+// Cierre circular: al final de CRONO6 redirige a CRONO1
+const NEXT_CRONO = "cronos1.html";
+const leftBtn = document.getElementById("scrollLeft");
+const rightBtn = document.getElementById("scrollRight");
+const scrollStep = 300;
+
+leftBtn.addEventListener("click", () => { wrapper.scrollBy({ left: -scrollStep, behavior: "smooth" }); });
+rightBtn.addEventListener("click", () => {
+    const tl = document.getElementById("timeline");
+    const maxScroll = tl.scrollWidth - wrapper.getBoundingClientRect().width + 120;
+    const alFinal = wrapper.scrollLeft >= maxScroll - 20;
+    if (alFinal && NEXT_CRONO) {
+        window.location.href = NEXT_CRONO;
+    } else {
+        wrapper.scrollLeft += scrollStep;
+    }
+});
+wrapper.addEventListener("scroll", () => {
+    const alFinal = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 10;
+    rightBtn.style.background = alFinal ? "rgba(212,175,55,0.5)" : "rgba(0,0,0,0.7)";
+    rightBtn.title = alFinal ? "Ir a Cronos 1 →" : "";
+});
+
+let isDown = false, startXpos, scrollLeftPos;
+wrapper.addEventListener("mousedown", (e) => { isDown = true; startXpos = e.pageX - wrapper.offsetLeft; scrollLeftPos = wrapper.scrollLeft; });
+wrapper.addEventListener("mouseleave", () => { isDown = false; });
+wrapper.addEventListener("mouseup", () => { isDown = false; });
+wrapper.addEventListener("mousemove", (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - wrapper.offsetLeft; const walk = (x - startXpos) * 1.5; wrapper.scrollLeft = scrollLeftPos - walk; });
+let touchStartX, touchScrollLeft;
+wrapper.addEventListener("touchstart", (e) => { touchStartX = e.touches[0].pageX - wrapper.offsetLeft; touchScrollLeft = wrapper.scrollLeft; }, { passive: true });
+wrapper.addEventListener("touchmove", (e) => { const x = e.touches[0].pageX - wrapper.offsetLeft; const walk = (x - touchStartX) * 1.5; wrapper.scrollLeft = touchScrollLeft - walk; }, { passive: true });
+
+function abrirModalImagen(src) { document.getElementById("modalImagenImg").src = src; document.getElementById("modalImagen").style.display = "flex"; }
+function cerrarModalImagen() { document.getElementById("modalImagen").style.display = "none"; }
+function abrirModal(fecha, titulo, texto) { document.getElementById("modalFecha").innerText = fecha; document.getElementById("modalTitulo").innerText = titulo; document.getElementById("modalTexto").innerText = texto; document.getElementById("modal").style.display = "flex"; }
+function cerrarModal() { document.getElementById("modal").style.display = "none"; }
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") { cerrarModal(); cerrarModalImagen(); } });
+</script>
+</body>
+</html>

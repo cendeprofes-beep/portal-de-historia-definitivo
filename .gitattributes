@@ -1,0 +1,9 @@
+# Conservar exactamente los bytes originales de los materiales del Portal.
+* -text
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.docx binary

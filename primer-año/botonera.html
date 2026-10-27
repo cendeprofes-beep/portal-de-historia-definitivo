@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1er Año – PORTAL DE HISTORIA</title>
+<style>
+  html, body { margin: 0; min-height: 100%; background: #002060; }
+  * { box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    min-height: 100svh;
+    overflow-x: hidden;
+  }
+  .botonera {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: url("botonera-primer-a%C3%B1o.png") center / 100% 100% no-repeat;
+  }
+  .b { position: absolute; left: 14.95%; width: 70.45%; display: block; }
+  a.b:hover, a.b:focus-visible { background-color: rgba(255,255,255,.2); outline: none; }
+  .nav {
+    position: fixed; top: max(12px, env(safe-area-inset-top)); z-index: 10;
+    width: 56px; height: 56px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: #001540; border: 2px solid rgba(255,255,255,.85);
+    transition: background .2s ease, transform .2s ease;
+  }
+  .nav:hover, .nav:focus-visible { background: #0a2f7a; transform: scale(1.08); outline: none; }
+  .nav svg { width: 30px; height: 30px; stroke: #fff; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-izq { left: max(12px, env(safe-area-inset-left)); }
+  .nav-der { right: max(12px, env(safe-area-inset-right)); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (max-width: 700px) and (orientation: portrait) {
+    .nav {
+      width: 48px;
+      height: 48px;
+    }
+
+    .nav svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .botonera {
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100svh;
+      aspect-ratio: auto;
+      background:
+        linear-gradient(rgba(0, 15, 50, .88), rgba(0, 20, 67, .94)),
+        url("botonera-primer-a%C3%B1o.png") center / cover no-repeat;
+      display: grid;
+      align-content: center;
+      gap: 12px;
+      padding: 76px 14px 28px;
+    }
+
+    .b {
+      position: relative;
+      top: auto !important;
+      left: auto;
+      width: 100%;
+      height: auto !important;
+      min-height: 68px;
+      padding: 12px 14px;
+      border: 2px solid #f4bc48;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff2c4;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(.82rem, 4vw, 1.08rem);
+      font-weight: 800;
+      line-height: 1.15;
+      text-align: center;
+      text-decoration: none;
+      box-shadow:
+        inset 0 0 18px rgba(255,174,46,.2),
+        0 0 10px rgba(20,145,255,.32);
+    }
+
+    .b::before {
+      content: attr(aria-label);
+    }
+
+    .b:nth-of-type(1) { background: linear-gradient(135deg, #071b43, #713800); }
+    .b:nth-of-type(2) { background: linear-gradient(135deg, #08214d, #69400d); }
+    .b:nth-of-type(3) { background: linear-gradient(135deg, #390713, #8b250c); }
+    .b:nth-of-type(4) { background: linear-gradient(135deg, #061d17, #375d0b); }
+    .b:nth-of-type(5) { background: linear-gradient(135deg, #2b1307, #84400c); }
+    .b:nth-of-type(6) { background: linear-gradient(135deg, #031b43, #075d8c); }
+    .b:nth-of-type(7) { background: linear-gradient(135deg, #210634, #662070); }
+
+    a.b:hover,
+    a.b:focus-visible,
+    a.b:active {
+      color: #ffffff;
+      filter: brightness(1.22);
+      outline: 3px solid #ffffff;
+      outline-offset: 2px;
+    }
+  }
+</style>
+</head>
+<body>
+  <a class="nav nav-izq" href="../index.html" aria-label="Volver atrás" title="Volver atrás">
+    <svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>
+  </a>
+  <a class="nav nav-der" href="../index.html" aria-label="Ir a página de inicio" title="Ir a página de inicio">
+    <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+  </a>
+  <main class="botonera">
+    <h1 class="sr">1er Año – Historia</h1>
+    <a class="b" target="_blank" rel="noopener" style="top:20.44%;height:8.54%" href="manual-primer-a%C3%B1o.pdf" aria-label="MANUAL DE HISTORIA DE PRIMER AÑO"></a>
+    <a class="b" target="_blank" rel="noopener" style="top:29.74%;height:7.73%" href="linea-vocabulario-mapa.html" aria-label="LÍNEA DE TIEMPO // VOCABULARIO // MAPA Y RED CONCEPTUALES"></a>
+    <a class="b" target="_blank" rel="noopener" style="top:38.31%;height:7.96%" href="PROGRAMA%20ANUAL%20DE%20HISTORIA.pdf" aria-label="PROGRAMA DE LA MATERIA"></a>
+    <a class="b" target="_blank" rel="noopener" style="top:47.04%;height:8.02%" href="PLANIFICACI%C3%93N%20DOCENTE%20ANUAL.pdf" aria-label="PLANIFICACIÓN ANUAL"></a>
+    <a class="b" target="_blank" rel="noopener" style="top:56.10%;height:8.11%" href="CRONOGRAMA%20DE%20CLASES.pdf" aria-label="CRONOGRAMA DE CLASES"></a>
+    <a class="b" target="_blank" rel="noopener" style="top:65.32%;height:7.73%" href="PLANILLA%20DE%20SEGUIMIENTO%20DE%20APRENDIZAJES.pdf" aria-label="PLANILLA DE SEGUIMIENTO DE APRENDIZAJES"></a>
+    <a class="b" target="_blank" rel="noopener" style="top:74.13%;height:7.82%" href="R%C3%9ABRICAS%20NO%20NUM%C3%89RICAS%20Y%20NUM%C3%89RICAS.pdf" aria-label="RÚBRICAS"></a>
+  </main>
+</body>
+</html>

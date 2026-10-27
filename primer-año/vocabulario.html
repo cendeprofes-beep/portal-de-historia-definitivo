@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulario Histórico | Por temas</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <style>
+        /* Estilos adicionales para la página de vocabulario */
+        body {
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .contenedor-vocabulario {
+            max-width: 900px;
+            margin: auto;
+            background-color: rgba(0,0,0,0.85);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        h1 {
+            text-align: center;
+            color: gold;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px black;
+        }
+        .subtitulo {
+            text-align: center;
+            color: #ddd;
+            font-style: italic;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        .botones-tematicos {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .btn-tema {
+            background: rgba(20,20,20,0.8);
+            border: 2px solid gold;
+            border-radius: 50px;
+            padding: 12px 25px;
+            color: gold;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-align: center;
+            flex: 0 0 auto;
+        }
+        .btn-tema:hover {
+            background: gold;
+            color: black;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px gold;
+        }
+        .barra-superior {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .nav-btn {
+            color: white;
+            text-decoration: none;
+            background-color: rgba(0,0,0,0.6);
+            padding: 8px 15px;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+        .nav-btn:hover {
+            background-color: rgba(0,0,0,0.8);
+        }
+        .firma {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #ccc;
+            border-top: 1px solid #444;
+            padding-top: 20px;
+        }
+        @media (max-width: 650px) {
+            .btn-tema { font-size: 0.9rem; padding: 8px 18px; }
+            h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="barra-superior">
+    <a href="linea-vocabulario-mapa.html" class="nav-btn">← Volver atrás</a>
+    <a href="../index.html" class="nav-btn">Inicio</a>
+</div>
+
+<div class="contenedor-vocabulario">
+    <h1>📖 Vocabulario Histórico</h1>
+    <div class="subtitulo">Seleccioná un tema para ver las palabras clave y sus definiciones</div>
+
+    <div class="botones-tematicos">
+        <a href="vocabulario-cronologia.html" class="btn-tema">⏳ Cronología y Periodización</a>
+        <a href="vocabulario-evolucion.html" class="btn-tema">🧬 Evolución y Hominización</a>
+        <a href="vocabulario-economia.html" class="btn-tema">💰 Economía y Trabajo</a>
+        <a href="vocabulario-politica.html" class="btn-tema">🏛️ Política y Estado</a>
+        <a href="vocabulario-religion.html" class="btn-tema">🕯️ Religión y Creencias</a>
+        <a href="vocabulario-arte.html" class="btn-tema">🎨 Arte y Cultura</a>
+        <a href="vocabulario-arqueologia.html" class="btn-tema">🔍 Arqueología y Paleontología</a>
+        <a href="vocabulario-sociedad.html" class="btn-tema">👥 Sociedad y Vida Cotidiana</a>
+        <a href="vocabulario-guerra.html" class="btn-tema">⚔️ Guerra y Expansión</a>
+        <a href="vocabulario-tecnologia.html" class="btn-tema">⚙️ Tecnología y Ciencia</a>
+    </div>
+
+    <p style="text-align: center; color: #aaa; margin-top: 30px;">Cada tema contiene las palabras clave con definiciones cortas, pensadas para estudiantes de primer año de secundaria.</p>
+</div>
+
+<div class="firma">
+    Página diseñada por el Prof. de Historia Claudio Damián Sacco, con asistencia técnica de CLAUDE IA
+</div>
+
+</body>
+</html>

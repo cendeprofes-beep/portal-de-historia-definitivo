@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa 2 — Mesopotamia: Ciudades e Imperios</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #222;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #eee;
+      min-height: 100vh;
+    }
+
+    /* BARRA SUPERIOR */
+    .barra-superior {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      background: rgba(20, 20, 20, 0.95);
+      border-bottom: 2px solid #d4af37;
+      padding: 8px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+    .nav-btn {
+      background: rgba(0,0,0,0.6);
+      color: #d4af37;
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      border: 1px solid #d4af37;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover { background: #d4af37; color: black; }
+    .barra-titulo {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #d4af37;
+      text-align: center;
+      flex: 1;
+      padding: 0 10px;
+    }
+
+    /* CONTENIDO */
+    .contenido {
+      padding: 65px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .instrucciones {
+      font-size: 0.82rem;
+      color: #aaa;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+    .instrucciones span { color: #d4af37; }
+
+    /* MAPA */
+    .mapa-container {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      max-width: 1600px;
+    }
+    .mapa-container img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* MARCADORES en porcentaje */
+    .marker {
+      position: absolute;
+      width: 1.25%;      /* proporcional al ancho */
+      padding-bottom: 1.25%; /* mantiene forma circular */
+      height: 0;
+      background: red;
+      border-radius: 50%;
+      border: 2px solid white;
+      cursor: pointer;
+      box-shadow: 0 0 10px red;
+      transform: translate(-50%, -50%);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: block;
+      text-decoration: none;
+    }
+    .marker:hover {
+      transform: translate(-50%, -50%) scale(1.4);
+      box-shadow: 0 0 18px rgba(255,60,60,0.9);
+    }
+
+    /* TOOLTIP */
+    .marker::after {
+      content: attr(data-title);
+      position: absolute;
+      bottom: 120%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.92);
+      color: #f9e294;
+      font-size: 0.72rem;
+      white-space: nowrap;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #d4af37;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: normal;
+      z-index: 100;
+    }
+    .marker:hover::after { opacity: 1; }
+
+    .firma {
+      font-size: 0.82rem;
+      color: gold;
+      font-weight: bold;
+      text-align: center;
+      padding: 20px 0 10px;
+    }
+
+  /* Flecha titilante pegada al círculo */
+  .marker::before {
+    content: "▼";
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    color: #2E8B57;        /* Verde inglés (SeaGreen) */
+    text-shadow: 0 0 5px red;
+    font-weight: bold;
+    pointer-events: none;
+    white-space: nowrap;
+    animation: titilar 1.2s infinite ease-in-out;
+  }
+
+/* Contenedor de los cuatro triángulos (rombo) */
+.marker .triangulo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;  /* para que no interfieran con el clic */
+  font-size: 0;
+  line-height: 0;
+  transform-origin: center;
+}
+
+/* Triángulo hacia arriba */
+.marker .triangulo.arriba {
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 10px solid #2E8B57;
+  transform: translate(-50%, -50%) translateY(-18px);
+}
+
+/* Triángulo hacia abajo */
+.marker .triangulo.abajo {
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 10px solid #2E8B57;
+  transform: translate(-50%, -50%) translateY(18px);
+}
+
+/* Triángulo hacia izquierda */
+.marker .triangulo.izquierda {
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 10px solid #2E8B57;
+  transform: translate(-50%, -50%) translateX(-18px);
+}
+
+/* Triángulo hacia derecha */
+.marker .triangulo.derecha {
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 10px solid #2E8B57;
+  transform: translate(-50%, -50%) translateX(18px);
+}
+
+/* Animación titilante para todos los triángulos */
+.marker .triangulo {
+  animation: titilarVerde 1.2s infinite ease-in-out;
+}
+
+@keyframes titilarVerde {
+  0% { opacity: 0.3; filter: drop-shadow(0 0 2px #004d26); }
+  50% { opacity: 1; filter: drop-shadow(0 0 6px #2E8B57); transform: translate(-50%, -50%) scale(1.1); }
+  100% { opacity: 0.3; filter: drop-shadow(0 0 2px #004d26); }
+}
+
+/* Ajuste para móviles: triángulos un poco más grandes */
+@media (max-width: 768px) {
+  .marker .triangulo.arriba, .marker .triangulo.abajo {
+    border-left-width: 8px;
+    border-right-width: 8px;
+  }
+  .marker .triangulo.arriba { border-bottom-width: 13px; transform: translate(-50%, -50%) translateY(-24px); }
+  .marker .triangulo.abajo { border-top-width: 13px; transform: translate(-50%, -50%) translateY(24px); }
+  .marker .triangulo.izquierda, .marker .triangulo.derecha {
+    border-top-width: 8px;
+    border-bottom-width: 8px;
+  }
+  .marker .triangulo.izquierda { border-right-width: 13px; transform: translate(-50%, -50%) translateX(-24px); }
+  .marker .triangulo.derecha { border-left-width: 13px; transform: translate(-50%, -50%) translateX(24px); }
+}
+
+
+
+  @media (max-width: 768px) {
+    .marker::before {
+      font-size: 20px;
+      bottom: -26px;
+    }
+  }
+
+  @keyframes titilar {
+    0% { opacity: 0.3; transform: translateX(-50%) scale(0.8); }
+    50% { opacity: 1; transform: translateX(-50%) scale(1.2); }
+    100% { opacity: 0.3; transform: translateX(-50%) scale(0.8); }
+  }
+
+  </style>
+</head>
+<body>
+
+<div class="barra-superior">
+  <a href="../../../lineas-tiempo/cronos2.html" class="nav-btn">← Volver</a>
+  <div class="barra-titulo">Mesopotamia: Ciudades e Imperios</div>
+  <a href="../../../../../../index.html" class="nav-btn">🏠 Inicio</a>
+</div>
+
+<div class="contenido">
+
+  <p class="instrucciones">Pasá el mouse sobre un punto para ver el nombre. <span>Hacé clic</span> para ver el video.</p>
+
+  <div class="mapa-container">
+
+    <img src="mapa2.png" alt="Mapa de Mesopotamia — ciudades sumerias e imperios">
+
+    <!-- Uruk: génesis de la vida urbana en Mesopotamia -->
+    <a class="marker" href="https://www.youtube.com/watch?v=tjUAZZsB-uY" target="_blank"
+       data-title="Uruk: génesis de la vida urbana en Mesopotamia"
+       style="left:41.89%; top:68.73%;"></a>
+
+    <!-- Lagash y la primera guerra de la historia -->
+    <a class="marker" href="https://www.youtube.com/watch?v=ncpu2rh-BpM" target="_blank"
+       data-title="Lagash y la primera guerra de la historia"
+       style="left:52.06%; top:59.53%;"></a>
+
+    <!-- Eridu: la cuna de los dioses de Mesopotamia -->
+    <a class="marker" href="https://www.youtube.com/watch?v=LxAIbvyTr2o" target="_blank"
+       data-title="Eridu: la cuna de los dioses de Mesopotamia"
+       style="left:46.06%; top:76.71%;"></a>
+
+    <!-- Nippur: la ciudad sagrada donde se coronaban los reyes sumerios -->
+    <a class="marker" href="https://www.youtube.com/watch?v=rLL4o0F6sIY" target="_blank"
+       data-title="Nippur: la ciudad sagrada donde se coronaban los reyes sumerios"
+       style="left:33.94%; top:48.45%;"></a>
+
+    <!-- El imperio acadio -->
+    <a class="marker" href="https://www.youtube.com/watch?v=EAdV8IkTAxI" target="_blank"
+       data-title="El imperio acadio"
+       style="left:23.17%; top:35.51%;"></a>
+
+    <!-- El renacimiento sumerio después de la caída del imperio acadio -->
+    <a class="marker" href="https://www.youtube.com/watch?v=q0Jn_RGrzss" target="_blank"
+       data-title="El renacimiento sumerio después de la caída del imperio acadio"
+       style="left:48.67%; top:76.27%;"></a>
+
+    <!-- La historia de Babilonia -->
+    <a class="marker" href="https://www.youtube.com/watch?v=s5rS2J5LCPA" target="_blank"
+       data-title="La historia de Babilonia"
+       style="left:22.72%; top:40.04%;"></a>
+
+    <!-- Los asirios y sus diferentes etapas históricas -->
+    <a class="marker" href="https://www.youtube.com/watch?v=P4GWIGA6WSE" target="_blank"
+       data-title="Los asirios y sus diferentes etapas históricas"
+       style="left:19.61%; top:1.87%;"></a>
+
+    <!-- El imperio medo -->
+    <a class="marker" href="https://www.youtube.com/watch?v=_6Q0-BlNjxk&t=205s" target="_blank"
+       data-title="El imperio medo"
+       style="left:76.22%; top:23.08%;"></a>
+
+    <!-- El imperio persa -->
+    <a class="marker" href="https://www.youtube.com/watch?v=-SemU4FWRj4" target="_blank"
+       data-title="El imperio persa"
+       style="left:79.61%; top:46.80%;"></a>
+
+  </div>
+
+  <div class="firma">
+    Página diseñada por el Prof. de Historia Claudio Damián Sacco, con asistencia técnica mayoritaria de DeepSeek y minoritaria de ChatGPT y Gemini.
+  </div>
+
+</div>
+<script>
+  // Agrega los cuatro triángulos (rombo) alrededor de cada marcador
+  document.querySelectorAll('.marker').forEach(function(marker) {
+    // Crear los cuatro elementos triangulares
+    var arriba = document.createElement('div');
+    arriba.className = 'triangulo arriba';
+    var abajo = document.createElement('div');
+    abajo.className = 'triangulo abajo';
+    var izquierda = document.createElement('div');
+    izquierda.className = 'triangulo izquierda';
+    var derecha = document.createElement('div');
+    derecha.className = 'triangulo derecha';
+    
+    // Agregarlos al marcador (el enlace <a>)
+    marker.appendChild(arriba);
+    marker.appendChild(abajo);
+    marker.appendChild(izquierda);
+    marker.appendChild(derecha);
+  });
+</script>
+</body>
+</html>

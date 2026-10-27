@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa 4 — El Imperio Romano en época de Trajano</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #222;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #eee;
+      min-height: 100vh;
+    }
+
+    /* BARRA SUPERIOR */
+    .barra-superior {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      background: rgba(20, 20, 20, 0.95);
+      border-bottom: 2px solid #d4af37;
+      padding: 8px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+    .nav-btn {
+      background: rgba(0,0,0,0.6);
+      color: #d4af37;
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      border: 1px solid #d4af37;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover { background: #d4af37; color: black; }
+    .barra-titulo {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #d4af37;
+      text-align: center;
+      flex: 1;
+      padding: 0 10px;
+    }
+
+    /* CONTENIDO */
+    .contenido {
+      padding: 65px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .instrucciones {
+      font-size: 0.82rem;
+      color: #aaa;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+    .instrucciones span { color: #d4af37; }
+
+    /* MAPA: posicionamiento en % para que sea siempre correcto */
+    .mapa-container {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      max-width: 1600px;
+    }
+    .mapa-container img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* MARCADORES en porcentaje */
+    .marker {
+      position: absolute;
+      width: 1.25%;
+      padding-bottom: 1.25%;
+      height: 0;
+      background: red;
+      border-radius: 50%;
+      border: 2px solid white;
+      cursor: pointer;
+      box-shadow: 0 0 10px red;
+      transform: translate(-50%, -50%);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: block;
+      text-decoration: none;
+    }
+    .marker:hover {
+      transform: translate(-50%, -50%) scale(1.4);
+      box-shadow: 0 0 18px rgba(255,60,60,0.9);
+    }
+
+    /* TOOLTIP */
+    .marker::after {
+      content: attr(data-title);
+      position: absolute;
+      bottom: 120%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.92);
+      color: #f9e294;
+      font-size: 0.72rem;
+      white-space: nowrap;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #d4af37;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: normal;
+      z-index: 100;
+    }
+    .marker:hover::after { opacity: 1; }
+
+    .firma {
+      font-size: 0.82rem;
+      color: gold;
+      font-weight: bold;
+      text-align: center;
+      padding: 20px 0 10px;
+    }
+
+    /* === FLECHA INFERIOR TITILANTE (verde inglés) === */
+    .marker::before {
+      content: "▼";
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      color: #2E8B57;
+      text-shadow: 0 0 5px red;
+      font-weight: bold;
+      pointer-events: none;
+      white-space: nowrap;
+      animation: titilarFlecha 1.2s infinite ease-in-out;
+    }
+
+    @keyframes titilarFlecha {
+      0% { opacity: 0.3; transform: translateX(-50%) scale(0.8); }
+      50% { opacity: 1; transform: translateX(-50%) scale(1.2); }
+      100% { opacity: 0.3; transform: translateX(-50%) scale(0.8); }
+    }
+
+    /* === ROMBO DE 4 TRIÁNGULOS (verde inglés) === */
+    .marker .triangulo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+      font-size: 0;
+      line-height: 0;
+    }
+
+    .marker .triangulo.arriba {
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 10px solid #2E8B57;
+      transform: translate(-50%, -50%) translateY(-18px);
+    }
+
+    .marker .triangulo.abajo {
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 10px solid #2E8B57;
+      transform: translate(-50%, -50%) translateY(18px);
+    }
+
+    .marker .triangulo.izquierda {
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-right: 10px solid #2E8B57;
+      transform: translate(-50%, -50%) translateX(-18px);
+    }
+
+    .marker .triangulo.derecha {
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+      border-left: 10px solid #2E8B57;
+      transform: translate(-50%, -50%) translateX(18px);
+    }
+
+    /* Animación solo de opacidad y sombra (no afecta position) */
+    .marker .triangulo {
+      animation: titilarRombo 1.2s infinite ease-in-out;
+    }
+
+    @keyframes titilarRombo {
+      0% { opacity: 0.3; filter: drop-shadow(0 0 2px #004d26); }
+      50% { opacity: 1; filter: drop-shadow(0 0 6px #2E8B57); }
+      100% { opacity: 0.3; filter: drop-shadow(0 0 2px #004d26); }
+    }
+
+    /* Ajuste para móviles: triángulos más grandes y flecha más grande */
+    @media (max-width: 768px) {
+      .marker::before {
+        font-size: 20px;
+        bottom: -26px;
+      }
+      .marker .triangulo.arriba, .marker .triangulo.abajo {
+        border-left-width: 8px;
+        border-right-width: 8px;
+      }
+      .marker .triangulo.arriba { border-bottom-width: 13px; transform: translate(-50%, -50%) translateY(-24px); }
+      .marker .triangulo.abajo { border-top-width: 13px; transform: translate(-50%, -50%) translateY(24px); }
+      .marker .triangulo.izquierda, .marker .triangulo.derecha {
+        border-top-width: 8px;
+        border-bottom-width: 8px;
+      }
+      .marker .triangulo.izquierda { border-right-width: 13px; transform: translate(-50%, -50%) translateX(-24px); }
+      .marker .triangulo.derecha { border-left-width: 13px; transform: translate(-50%, -50%) translateX(24px); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="barra-superior">
+  <a href="../../../lineas-tiempo/cronos4.html" class="nav-btn">← Volver</a>
+  <div class="barra-titulo">El Imperio Romano en época de Trajano</div>
+  <a href="../../../../../../index.html" class="nav-btn">🏠 Inicio</a>
+</div>
+
+<div class="contenido">
+
+  <p class="instrucciones">Pasá el mouse sobre un punto para ver el nombre. <span>Hacé clic</span> para ver el video.</p>
+
+  <div class="mapa-container">
+    <img src="mapa4.png" alt="Mapa del Imperio Romano en época de Trajano">
+
+    <!-- 15 MARCADORES (coordenadas originales) -->
+    <a class="marker" href="https://www.youtube.com/watch?v=8KE1gFV07pM" target="_blank"
+       data-title="Roma imperial en época de Trajano"
+       style="left:40.0%; top:58.26%;"></a>
+
+    <a class="marker" href="https://www.youtube.com/watch?v=lHOTQw-g5SM" target="_blank"
+       data-title="La conquista romana de Dacia — Guerras Dacias"
+       style="left:55.0%; top:47.7%;"></a>
+
+    <a class="marker" href="https://www.youtube.com/watch?v=S2SVTLWm2AA" target="_blank"
+       data-title="Londinium — Londres bajo el control de Roma"
+       style="left:25.94%; top:28.62%;"></a>
+
+    <a class="marker" href="https://www.youtube.com/watch?v=ezOGXCLgiM8" target="_blank"
+       data-title="Alejandría: el faro que iluminó el mundo antiguo"
+       style="left:68.12%; top:86.88%;"></a>
+
+    <a class="marker" href="https://www.youtube.com/watch?v=WOKpIMhMVTg" target="_blank"
+       data-title="Lugdunum — Lyon bajo el Imperio Romano"
+       style="left:29.69%; top:45.57%;"></a>
+
+    <a class="marker" href="https://www.youtube.com/watch?v=VIC7NTSvVkw" target="_blank"
+       data-title="Tarraco — Tarragona bajo el Imperio Romano"
+       style="left:23.25%; top:56.22%;"></a>
+
+    <a class="marker" href="https://www.youtube.com/watch?v=mpZgUV7CoTQ" target="_blank"
+       data-title="Arabia — el límite del poder imperial romano en Asia"
+       style="left:86.25%; top:86.88%;"></a>
+
+    <a class="marker" href="https://www.youtube.com/watch?v=kR_cz-s4wNQ" target="_blank"
+       data-title="Trajano contra el Imperio Parto"
+       style="left:85.62%; top:69.85%;"></a>
+
+    <a class="marker" href="https://www.youtube.com/watch?v=VdvT06qPbR4" target="_blank"
+       data-title="Los sármatas: más allá del limes danubiano"
+       style="left:66.25%; top:40.03%;"></a>
+
+    <a class="marker" href="https://www.youtube.com/watch?v=CsB-v7afuxk" target="_blank"
+       data-title="Reino de los Partos"
+       style="left:94.38%; top:67.29%;"></a>
+
+    <a class="marker" href="https://www.youtube.com/watch?v=hqyEPawav1Q" target="_blank"
+       data-title="África Proconsularis"
+       style="left:38.12%; top:81.77%;"></a>
+
+    <a class="marker" href="https://www.youtube.com/watch?v=vMaDASdjXNs" target="_blank"
+       data-title="Hibernia — Irlanda: la isla que Roma no pudo conquistar"
+       style="left:17.81%; top:19.17%;"></a>
+
+    <a class="marker" href="https://www.youtube.com/watch?v=gq4neHmHI-A" target="_blank"
+       data-title="Reino de Mauritania: un antiguo reino bereber"
+       style="left:18.75%; top:71.98%;"></a>
+
+    <a class="marker" href="https://www.youtube.com/watch?v=z5pwxMtHuOI" target="_blank"
+       data-title="Caledonia — Escocia: la tierra que Roma no pudo conquistar"
+       style="left:25.62%; top:12.78%;"></a>
+
+    <a class="marker" href="https://www.youtube.com/watch?v=zkA-6192Uuo" target="_blank"
+       data-title="Lutetia Parisiorum — génesis urbana de París en la Galia Romana"
+       style="left:28.12%; top:37.65%;"></a>
+
+    <a class="marker" href="https://www.youtube.com/watch?v=LSIdAy8FDKM&t=158s" target="_blank"
+      data-title="Las 10 batallas más grandes de la historia de Roma"
+      style="left:39.13%; top:52.47%;"></a>
+   
+
+  </div>
+
+  <div class="firma">
+    Página diseñada por el Prof. de Historia Claudio Damián Sacco, con asistencia técnica mayoritaria de DeepSeek y minoritaria de ChatGPT y Gemini.
+  </div>
+</div>
+
+<script>
+  // Agrega los cuatro triángulos (rombo) alrededor de cada marcador
+  document.querySelectorAll('.marker').forEach(function(marker) {
+    var arriba = document.createElement('div');
+    arriba.className = 'triangulo arriba';
+    var abajo = document.createElement('div');
+    abajo.className = 'triangulo abajo';
+    var izquierda = document.createElement('div');
+    izquierda.className = 'triangulo izquierda';
+    var derecha = document.createElement('div');
+    derecha.className = 'triangulo derecha';
+    marker.appendChild(arriba);
+    marker.appendChild(abajo);
+    marker.appendChild(izquierda);
+    marker.appendChild(derecha);
+  });
+</script>
+</body>
+</html>

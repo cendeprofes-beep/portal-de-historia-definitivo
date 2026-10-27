@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa 1 — La Evolución Humana (Prehistoria)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #222;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #eee;
+      min-height: 100vh;
+    }
+
+    /* BARRA SUPERIOR */
+    .barra-superior {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      background: rgba(20, 20, 20, 0.95);
+      border-bottom: 2px solid #d4af37;
+      padding: 8px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+    .nav-btn {
+      background: rgba(0,0,0,0.6);
+      color: #d4af37;
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      border: 1px solid #d4af37;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover { background: #d4af37; color: black; }
+    .barra-titulo {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #d4af37;
+      text-align: center;
+      flex: 1;
+      padding: 0 10px;
+    }
+
+    /* CONTENIDO */
+    .contenido {
+      padding: 65px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .instrucciones {
+      font-size: 0.82rem;
+      color: #aaa;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+    .instrucciones span { color: #d4af37; }
+
+    /* MAPA: posicionamiento en % para que sea siempre correcto */
+    .mapa-container {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      max-width: 1600px;
+    }
+    .mapa-container img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* MARCADORES en porcentaje */
+    .marker {
+      position: absolute;
+      width: 1.25%;      /* proporcional al ancho */
+      padding-bottom: 1.25%; /* mantiene forma circular */
+      height: 0;
+      background: red;
+      border-radius: 50%;
+      border: 2px solid white;
+      cursor: pointer;
+      box-shadow: 0 0 10px red;
+      transform: translate(-50%, -50%);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: block;
+      text-decoration: none;
+    }
+    .marker:hover {
+      transform: translate(-50%, -50%) scale(1.4);
+      box-shadow: 0 0 18px rgba(255,60,60,0.9);
+    }
+
+    /* TOOLTIP */
+    .marker::after {
+      content: attr(data-title);
+      position: absolute;
+      bottom: 120%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.92);
+      color: #f9e294;
+      font-size: 0.72rem;
+      white-space: nowrap;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #d4af37;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: normal;
+      z-index: 100;
+    }
+    .marker:hover::after { opacity: 1; }
+
+    .firma {
+      font-size: 0.82rem;
+      color: gold;
+      font-weight: bold;
+      text-align: center;
+      padding: 20px 0 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="barra-superior">
+  <a href="../../../lineas-tiempo/cronos1.html#botonMapa" class="nav-btn">← Volver</a>
+  <div class="barra-titulo">La Evolución Humana (Prehistoria)</div>
+  <a href="../../../lineas-tiempo/cronos1.html#botonMapa" class="nav-btn">⏱️ Ir a Línea de Tiempo</a>
+<a href="../../../../../../index.html" class="nav-btn">🏠 Inicio</a>
+</div>
+
+<div class="contenido">
+
+  <p class="instrucciones">Pasá el mouse sobre un punto para ver el nombre. <span>Hacé clic</span> para ver el video.</p>
+
+  <div class="mapa-container">
+
+    <img src="mapa1.png" alt="Mapa de la evolución humana – homininos y especies del género Homo">
+
+    <!-- El Origen de los homininos -->
+    <a class="marker" href="https://www.youtube.com/watch?v=O4FYRG4hZIg" target="_blank"
+       data-title="El Origen de los homininos"
+       style="left:25.22%; top:81.82%;"></a>
+
+    <!-- Ardipithecus ramidus -->
+    <a class="marker" href="https://www.youtube.com/watch?v=8ubfoPKNmMo&amp;t=46s" target="_blank"
+       data-title="Ardipithecus ramidus"
+       style="left:36.61%; top:88.04%;"></a>
+
+    <!-- Australopithecus -->
+    <a class="marker" href="https://www.youtube.com/watch?v=Zl5ezyh3f88&amp;t=23s" target="_blank"
+       data-title="Australopithecus"
+       style="left:46.56%; top:68.68%;"></a>
+
+    <!-- Parántropos -->
+    <a class="marker" href="https://www.youtube.com/watch?v=zQqf1soMkpg&amp;t=109s" target="_blank"
+       data-title="Parántropos"
+       style="left:55.00%; top:57.21%;"></a>
+
+    <!-- Homo habilis y homo ergaster -->
+    <a class="marker" href="https://www.youtube.com/watch?v=wDCXIUIKKT8&amp;t=64s" target="_blank"
+       data-title="Homo habilis y Homo ergaster"
+       style="left:63.00%; top:45.06%;"></a>
+
+    <!-- Homo erectus -->
+    <a class="marker" href="https://www.youtube.com/watch?v=Fbn7Om5Y9iw&amp;t=167s" target="_blank"
+       data-title="Homo erectus"
+       style="left:66.39%; top:54.05%;"></a>
+
+    <!-- Homo heidelbergensis -->
+    <a class="marker" href="https://www.youtube.com/watch?v=AwoTCe1xMyo" target="_blank"
+       data-title="Homo heidelbergensis"
+       style="left:67.94%; top:58.60%;"></a>
+
+    <!-- Homo neanderthalensis -->
+    <a class="marker" href="https://www.youtube.com/watch?v=n0WgCa3vakE" target="_blank"
+       data-title="Homo neanderthalensis"
+       style="left:71.44%; top:65.71%;"></a>
+
+    <!-- Homo sapiens -->
+    <a class="marker" href="https://www.youtube.com/watch?v=POkGdfdh8Qw" target="_blank"
+       data-title="Homo sapiens"
+       style="left:73.94%; top:72.04%;"></a>
+
+  </div>
+
+  <div class="firma">
+    Página diseñada por el Prof. de Historia Claudio Damián Sacco, con asistencia técnica mayoritaria de DeepSeek y minoritaria de ChatGPT y Gemini.
+  </div>
+
+</div>
+</body>
+</html>

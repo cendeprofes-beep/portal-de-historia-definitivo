@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2do Año – PORTAL DE HISTORIA</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: #001b45; }
+  body { min-height: 100vh; min-height: 100svh; overflow-x: hidden; }
+  .botonera {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1672 / 940;
+    background: url("botonera-segundo-a%C3%B1o.png") center / 100% 100% no-repeat;
+  }
+  .page-title {
+    position: absolute; top: 2.2%; left: 12%; right: 12%; z-index: 2; margin: 0;
+    color: #ffe7aa; font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.25rem, 3.2vw, 3.2rem); line-height: 1; text-align: center;
+    text-shadow: 0 2px 5px #000, 0 0 14px rgba(255,176,40,.45);
+  }
+  .b { position: absolute; left: 15.80%; width: 68.30%; display: block; }
+  a.b:hover, a.b:focus-visible { background-color: rgba(255,255,255,.2); outline: none; }
+  .nav {
+    position: fixed; top: max(12px, env(safe-area-inset-top)); z-index: 20;
+    width: 56px; height: 56px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,21,64,.9); border: 2px solid rgba(255,255,255,.85);
+    transition: background .2s ease, transform .2s ease;
+  }
+  .nav:hover, .nav:focus-visible { background: #0a2f7a; transform: scale(1.08); outline: none; }
+  .nav svg { width: 30px; height: 30px; stroke: #fff; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-izq { left: max(12px, env(safe-area-inset-left)); }
+  .nav-der { right: max(12px, env(safe-area-inset-right)); }
+  .extras {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;
+    position: relative; z-index: 3;
+    margin-top: -6.1vw;
+    padding: 8px clamp(10px, 2vw, 28px) 32px;
+    background: linear-gradient(180deg, rgba(0,27,69,0), #001b45 42%, #000d27 100%);
+  }
+  .btn-app {
+    display: block; overflow: hidden; border-radius: 12px; background: #000;
+    box-shadow: 0 5px 16px rgba(0,0,0,.45); transition: filter .2s ease, transform .2s ease;
+  }
+  .btn-app:hover, .btn-app:focus-visible { filter: brightness(1.2); transform: translateY(-2px); outline: 3px solid #fff; outline-offset: 2px; }
+  .btn-app img { display: block; width: 100%; height: auto; }
+
+  @media (min-width: 701px) and (max-width: 1050px) {
+    .extras {
+      grid-template-columns: repeat(2, minmax(220px, 310px));
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 700px) and (orientation: portrait) {
+    .nav { width: 48px; height: 48px; }
+    .nav svg { width: 26px; height: 26px; }
+    .botonera {
+      min-height: 100vh; min-height: 100svh; aspect-ratio: auto;
+      background: linear-gradient(rgba(0,15,50,.88), rgba(0,20,67,.94)), url("botonera-segundo-a%C3%B1o.png") center / cover no-repeat;
+      display: grid; align-content: center; gap: 12px; padding: 76px 14px 28px;
+    }
+    .page-title { position: static; margin: 0 0 8px; font-size: clamp(1.25rem, 7vw, 1.9rem); }
+    .b {
+      position: relative; top: auto !important; left: auto; width: 100%; height: auto !important;
+      min-height: 68px; padding: 12px 14px; border: 2px solid #f4bc48; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff2c4; font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(.82rem, 4vw, 1.08rem); font-weight: 800; line-height: 1.15;
+      text-align: center; text-decoration: none; box-shadow: inset 0 0 18px rgba(255,174,46,.2), 0 0 10px rgba(20,145,255,.32);
+    }
+    .b::before { content: attr(aria-label); }
+    .b:nth-of-type(1), .b:nth-of-type(2) { background: linear-gradient(135deg, #08214d, #69400d); }
+    .b:nth-of-type(3) { background: linear-gradient(135deg, #390713, #8b250c); }
+    .b:nth-of-type(4) { background: linear-gradient(135deg, #061d17, #375d0b); }
+    .b:nth-of-type(5) { background: linear-gradient(135deg, #2b1307, #84400c); }
+    .b:nth-of-type(6) { background: linear-gradient(135deg, #031b43, #075d8c); }
+    .b:nth-of-type(7) { background: linear-gradient(135deg, #210634, #662070); }
+    a.b:hover, a.b:focus-visible, a.b:active { color: #fff; filter: brightness(1.22); outline: 3px solid #fff; outline-offset: 2px; }
+    .extras { grid-template-columns: 1fr; margin-top: 0; padding: 20px 14px 30px; }
+  }
+</style>
+</head>
+<body>
+  <a class="nav nav-izq" href="../index.html" aria-label="Volver atrás" title="Volver atrás">
+    <svg viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg>
+  </a>
+  <a class="nav nav-der" href="../index.html" aria-label="Ir a página de inicio" title="Ir a página de inicio">
+    <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+  </a>
+  <main class="botonera">
+    <h1 class="page-title">HISTORIA DE SEGUNDO AÑO</h1>
+    <a class="b" target="_blank" rel="noopener" style="top:13.72%;height:9.47%" href="manual-segundo-a%C3%B1o.pdf" aria-label="MANUAL DE HISTORIA DE SEGUNDO AÑO"></a>
+    <a class="b" target="_blank" rel="noopener" style="top:24.68%;height:9.36%" href="linea-vocabulario-mapa.html" aria-label="LÍNEA DE TIEMPO // VOCABULARIO // MAPA Y RED CONCEPTUALES"></a>
+    <a class="b" target="_blank" rel="noopener" style="top:35.53%;height:9.58%" href="PROGRAMA_ANUAL_DE_HISTORIA_SEGUNDO_A%C3%91O.pdf" aria-label="PROGRAMA DE LA MATERIA"></a>
+    <a class="b" target="_blank" rel="noopener" style="top:46.60%;height:9.68%" href="PLANIFICACION_ANUAL_HISTORIA_SEGUNDO_A%C3%91O.pdf" aria-label="PLANIFICACIÓN ANUAL"></a>
+    <a class="b" target="_blank" rel="noopener" style="top:57.77%;height:9.36%" href="CRONOGRAMA_HISTORIA_SEGUNDO_A%C3%91O.pdf" aria-label="CRONOGRAMA DE CLASES"></a>
+    <a class="b" target="_blank" rel="noopener" style="top:68.62%;height:9.47%" href="PLANILLA_DE_SEGUIMIENTO_DE_APRENDIZAJES_HISTORIA_SEGUNDO_A%C3%91O.pdf" aria-label="PLANILLA DE SEGUIMIENTO DE APRENDIZAJES"></a>
+    <a class="b" target="_blank" rel="noopener" style="top:79.47%;height:9.68%" href="RUBRICAS_NO_NUMERICAS_Y_NUMERICAS_HISTORIA_SEGUNDO_A%C3%91O.pdf" aria-label="RÚBRICAS"></a>
+  </main>
+  <section class="extras" aria-label="Materiales complementarios de Segundo Año">
+    <a class="btn-app" target="_blank" rel="noopener" href="APP%20-%20UNIDAD%203/APP%20-%20HISTORIA%20DE%20SEGUNDO%20A%C3%91O%20-%20UNIDAD%203.pdf" aria-label="APP de la Unidad 3">
+      <img src="APP-unidad-3-icono.png" alt="APP de la Unidad 3" width="2172" height="724">
+    </a>
+    <a class="btn-app" target="_blank" rel="noopener" href="fuentes-unidad-3.html" aria-label="Fuentes de la Unidad 3">
+      <img src="FUENTES-unidad-3-icono.png" alt="Fuentes de la Unidad 3" width="2172" height="724">
+    </a>
+    <a class="btn-app" target="_blank" rel="noopener" href="APP%20-%20UNIDAD%205/APP%20-%20HISTORIA%20DE%20SEGUNDO%20A%C3%91O%20-%20UNIDAD%205.pdf" aria-label="APP de la Unidad 5">
+      <img src="APP-unidad-5-icono.png" alt="APP de la Unidad 5" width="2172" height="724">
+    </a>
+    <a class="btn-app" target="_blank" rel="noopener" href="fuentes-unidad-5.html" aria-label="Fuentes de la Unidad 5">
+      <img src="FUENTES-unidad-5-icono.png" alt="Fuentes de la Unidad 5" width="2172" height="724">
+    </a>
+  </section>
+</body>
+</html>

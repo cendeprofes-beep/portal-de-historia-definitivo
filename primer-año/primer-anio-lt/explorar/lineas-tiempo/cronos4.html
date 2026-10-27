@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRONO4 - De 1 d.C. a 476 d.C.</title>
+<style>
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0a0a0a;
+    color: #eee;
+    overflow: hidden;
+}
+header {
+    background: #1a1a1a;
+    border-bottom: 2px solid #d4af37;
+    padding: 15px 20px;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+header h1 {
+    margin: 0;
+    color: #d4af37;
+    font-size: 1.6rem;
+}
+header p {
+    margin: 5px 0 0;
+    font-size: 0.85rem;
+    color: #ccc;
+}
+.btn-volver {
+    position: fixed;
+    top: 15px;
+    left: 20px;
+    background: rgba(0,0,0,0.6);
+    color: #d4af37;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    z-index: 101;
+    border: 1px solid #d4af37;
+}
+.btn-volver:hover {
+    background: #d4af37;
+    color: black;
+}
+.btn-inicio {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    background: rgba(0,0,0,0.6);
+    color: #d4af37;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    z-index: 101;
+    border: 1px solid #d4af37;
+}
+.btn-inicio:hover {
+    background: #d4af37;
+    color: black;
+}
+.timeline-wrapper {
+    position: relative;
+    top: 100px;
+    width: 100%;
+    height: calc(100vh - 100px);
+    overflow-x: auto;
+    overflow-y: hidden;
+    cursor: grab;
+}
+.timeline-wrapper:active {
+    cursor: grabbing;
+}
+.timeline {
+    position: relative;
+    min-width: max-content;
+    height: 630px;
+    margin: 0 60px;
+}
+.linea-central {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: #d4af37;
+    border-radius: 2px;
+    z-index: 1;
+}
+.evento {
+    position: absolute;
+    top: 40px;
+    transform: translateX(-50%);
+    text-align: center;
+    cursor: pointer;
+    z-index: 2;
+}
+.punto {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+    margin: 0 auto;
+    transition: transform 0.2s;
+}
+.punto:hover {
+    transform: scale(1.3);
+}
+/* Colores de los puntos según período */
+.altoimperio { background: #CD7F32; }
+.crisis { background: #9E9E9E; }
+.tardoimperio { background: #BA55D3; }
+.info {
+    position: absolute;
+    width: 140px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    pointer-events: none;
+}
+.fecha {
+    font-size: 0.75rem;
+    color: #ddd;
+    margin-bottom: 3px;
+}
+.titulo {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #fff;
+    line-height: 1.2;
+}
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-contenido {
+    background: #1e1e1e;
+    border-left: 5px solid #d4af37;
+    max-width: 500px;
+    width: 90%;
+    padding: 20px;
+    border-radius: 12px;
+    animation: fadeIn 0.2s;
+}
+.modal-contenido h2 {
+    color: #d4af37;
+    margin-top: 0;
+}
+.modal-contenido h3 {
+    color: #00BFFF;
+}
+.modal-contenido p {
+    line-height: 1.5;
+    color: #ddd;
+}
+.cerrar {
+    background: #d4af37;
+    color: black;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    margin-top: 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95);}
+    to { opacity: 1; transform: scale(1);}
+}
+.nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.7);
+    color: #d4af37;
+    border: 1px solid #d4af37;
+    font-size: 2rem;
+    width: 45px;
+    height: 80px;
+    border-radius: 12px;
+    cursor: pointer;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+.nav-btn:hover {
+    background: #d4af37;
+    color: black;
+}
+.left-btn {
+    left: 10px;
+}
+.right-btn {
+    right: 10px;
+}
+.leyenda {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    background: rgba(0,0,0,0.75);
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    z-index: 15;
+    backdrop-filter: blur(5px);
+}
+.item-leyenda {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.cor {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+.frame-imagen {
+    position: absolute;
+    width: 307px;
+    height: 192px;
+    border: 2px solid #d4af37;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    transition: box-shadow 0.2s;
+}
+.frame-imagen:hover {
+    box-shadow: 0 4px 25px rgba(212,175,55,0.5);
+}
+.frame-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s;
+}
+.frame-imagen:hover img {
+    transform: scale(1.05);
+}
+#modalImagen {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    cursor: zoom-out;
+}
+#modalImagen img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+    display: block;
+    animation: fadeIn 0.2s;
+}
+@media (max-width: 700px) {
+    .nav-btn { width: 35px; height: 60px; font-size: 1.5rem; }
+    .evento { top: 35px; }
+    .linea-central { top: 35px; }
+    .timeline { height: 420px; }
+}
+</style>
+</head>
+<body>
+<header>
+    <h1>DE LA CONSOLIDACIÓN DEL IMPERIO A LA CAÍDA DE ROMA (1 d.C. – 476 d.C.)</h1>
+    <p>Desliza horizontalmente o usa los botones laterales. Toca los puntos para más información.</p>
+</header>
+<a href="index.html" class="btn-volver">← Líneas de tiempo</a>
+<a href="../../../../index.html" class="btn-inicio">🏠 Inicio</a>
+
+<div class="nav-btn left-btn" id="scrollLeft">❮</div>
+<div class="nav-btn right-btn" id="scrollRight">❯</div>
+
+<div class="timeline-wrapper" id="timelineWrapper">
+    <div class="timeline" id="timeline"></div>
+</div>
+
+<div class="leyenda">
+    <div class="item-leyenda"><div class="cor altoimperio"></div>Alto Imperio (paz romana)</div>
+    <div class="item-leyenda"><div class="cor crisis"></div>Crisis del siglo III</div>
+    <div class="item-leyenda"><div class="cor tardoimperio"></div>Bajo Imperio / Tardoimperio</div>
+</div>
+
+<div class="modal" id="modal">
+    <div class="modal-contenido">
+        <h2 id="modalFecha"></h2>
+        <h3 id="modalTitulo"></h3>
+        <p id="modalTexto"></p>
+        <button class="cerrar" onclick="cerrarModal()">Cerrar</button>
+    </div>
+</div>
+
+<div id="modalImagen" onclick="cerrarModalImagen()">
+    <img id="modalImagenImg" src="" alt="">
+</div>
+
+<script>
+// EVENTOS SEGÚN CRONOLOGÍA DILECER (CRONO4)
+const eventos = [
+    { fecha: "1 d.C.", titulo: "Consolidación del Imperio romano bajo Augusto", tipo: "altoimperio", texto: "Augusto establece un sistema de gobierno estable que inaugura la Pax Romana, una época de prosperidad y paz interna que duraría dos siglos." },
+    { fecha: "~4–30 d.C.", titulo: "Jesús de Nazaret", tipo: "altoimperio", texto: "Vida y predicación de Jesús en Judea, cuya enseñanza sentaría las bases del cristianismo." },
+    { fecha: "14 d.C.", titulo: "Muerte de Augusto", tipo: "altoimperio", texto: "Fallece Augusto; le sucede Tiberio, continuando la dinastía Julio-Claudia." },
+    { fecha: "~30 d.C.", titulo: "Expansión inicial del cristianismo", tipo: "altoimperio", texto: "Los apóstoles y seguidores de Jesús difunden el cristianismo por Judea y el Mediterráneo oriental." },
+    { fecha: "64 d.C.", titulo: "Gran incendio de Roma", tipo: "altoimperio", texto: "Nerón es acusado de haber provocado el incendio; se inicia la primera persecución sistemática de cristianos." },
+    { fecha: "70 d.C.", titulo: "Destrucción del Templo de Jerusalén", tipo: "altoimperio", texto: "Tito sofoca la rebelión judía y destruye el Segundo Templo, dispersando a la población judía (diáspora)." },
+    { fecha: "79 d.C.", titulo: "Erupción del Vesubio", tipo: "altoimperio", texto: "El volcán destruye Pompeya y Herculano, enterrándolas bajo cenizas." },
+    { fecha: "98–117 d.C.", titulo: "Máxima expansión del Imperio", tipo: "altoimperio", texto: "Bajo Trajano, el Imperio alcanza su mayor extensión territorial." },
+    { fecha: "105 d.C.", titulo: "Difusión del papel en China", tipo: "altoimperio", texto: "Se perfecciona la fabricación de papel, que revolucionará la difusión del conocimiento." },
+    { fecha: "117–138 d.C.", titulo: "Adriano", tipo: "altoimperio", texto: "Adriano consolida las fronteras y ordena construir el Muro de Adriano en Britania." },
+    { fecha: "~120 d.C.", titulo: "Teotihuacán", tipo: "altoimperio", texto: "Auge urbano y comercial de Teotihuacán en Mesoamérica." },
+    { fecha: "132–135 d.C.", titulo: "Rebelión de Bar Kojba", tipo: "altoimperio", texto: "Última gran revuelta judía contra Roma, sofocada con gran violencia." },
+    { fecha: "161–180 d.C.", titulo: "Marco Aurelio", tipo: "altoimperio", texto: "Gobierno del emperador filósofo, marcado por guerras fronterizas." },
+    { fecha: "~165 d.C.", titulo: "Peste antonina", tipo: "altoimperio", texto: "Epidemia que diezma la población del Imperio." },
+    { fecha: "180 d.C.", titulo: "Fin de la Pax Romana", tipo: "altoimperio", texto: "Con la muerte de Marco Aurelio comienza un período de inestabilidad." },
+    { fecha: "~200 d.C.", titulo: "Desarrollo maya clásico", tipo: "altoimperio", texto: "Importantes centros mayas alcanzan su apogeo en Mesoamérica." },
+    { fecha: "212 d.C.", titulo: "Edicto de Caracalla", tipo: "crisis", texto: "Concede la ciudadanía romana a todos los hombres libres del Imperio." },
+    { fecha: "224 d.C.", titulo: "Imperio sasánida", tipo: "crisis", texto: "Los sasánidas unifican Persia y se convierten en la principal amenaza oriental de Roma." },
+    { fecha: "235–284 d.C.", titulo: "Crisis del siglo III", tipo: "crisis", texto: "Anarquía militar, invasiones y fragmentación del Imperio." },
+    { fecha: "250 d.C.", titulo: "Persecución de Decio", tipo: "crisis", texto: "Primera persecución sistemática de cristianos a nivel imperial." },
+    { fecha: "260 d.C.", titulo: "Fragmentación imperial", tipo: "crisis", texto: "Surgen reinos separatistas (Imperio galo, Reino de Palmira)." },
+    { fecha: "~300 d.C.", titulo: "Redes comerciales transaharianas", tipo: "crisis", texto: "Expansión del comercio a través del Sáhara, conectando África occidental con el Mediterráneo." },
+    { fecha: "284 d.C.", titulo: "Diocleciano", tipo: "tardoimperio", texto: "Diocleciano inicia reformas profundas para estabilizar el Imperio." },
+    { fecha: "293 d.C.", titulo: "Tetrarquía", tipo: "tardoimperio", texto: "Establece el gobierno de cuatro emperadores para administrar mejor el territorio." },
+    { fecha: "~300 d.C.", titulo: "Auge maya clásico", tipo: "tardoimperio", texto: "La civilización maya alcanza su máximo esplendor cultural y urbano." },
+    { fecha: "306 d.C.", titulo: "Ascenso de Constantino", tipo: "tardoimperio", texto: "Constantino se proclama emperador tras la muerte de su padre Constancio Cloro." },
+    { fecha: "312 d.C.", titulo: "Batalla del Puente Milvio", tipo: "tardoimperio", texto: "Constantino derrota a Majencio; atribuye su victoria al Dios cristiano." },
+    { fecha: "313 d.C.", titulo: "Edicto de Milán", tipo: "tardoimperio", texto: "Legalización del cristianismo en el Imperio." },
+    { fecha: "324 d.C.", titulo: "Fundación de Constantinopla", tipo: "tardoimperio", texto: "Constantino elige Bizancio como nueva capital, renombrándola Constantinopla." },
+    { fecha: "325 d.C.", titulo: "Concilio de Nicea", tipo: "tardoimperio", texto: "Primer concilio ecuménico que define la doctrina cristiana (Credo niceno)." },
+    { fecha: "330 d.C.", titulo: "Consolidación de Constantinopla", tipo: "tardoimperio", texto: "La nueva capital se convierte en el centro político y económico del Imperio de Oriente." },
+    { fecha: "~350 d.C.", titulo: "Migraciones germánicas", tipo: "tardoimperio", texto: "Pueblos germánicos presionan las fronteras del Imperio romano." },
+    { fecha: "376 d.C.", titulo: "Entrada de los visigodos", tipo: "tardoimperio", texto: "Los visigodos cruzan el Danubio y se asientan en territorio imperial." },
+    { fecha: "378 d.C.", titulo: "Adrianópolis", tipo: "tardoimperio", texto: "Derrota romana frente a los visigodos; muere el emperador Valente." },
+    { fecha: "380 d.C.", titulo: "Cristianismo religión oficial", tipo: "tardoimperio", texto: "Teodosio proclama el cristianismo como única religión lícita del Imperio." },
+    { fecha: "395 d.C.", titulo: "División definitiva del Imperio", tipo: "tardoimperio", texto: "Tras la muerte de Teodosio, el Imperio se divide en Occidente y Oriente." },
+    { fecha: "410 d.C.", titulo: "Saqueo de Roma", tipo: "tardoimperio", texto: "Alarico y sus visigodos saquean la ciudad de Roma." },
+    { fecha: "429 d.C.", titulo: "Vándalos en África", tipo: "tardoimperio", texto: "Los vándalos cruzan a África del Norte y fundan un reino independiente." },
+    { fecha: "451 d.C.", titulo: "Campos Cataláunicos", tipo: "tardoimperio", texto: "Romanos y visigodos frenan el avance de Atila y sus hunos." },
+    { fecha: "455 d.C.", titulo: "Saqueo vándalo de Roma", tipo: "tardoimperio", texto: "Los vándalos saquean Roma durante dos semanas." },
+    { fecha: "476 d.C.", titulo: "Caída del Imperio romano de Occidente", tipo: "tardoimperio", texto: "Odoacro depone al último emperador, Rómulo Augústulo, marcando el fin de la Edad Antigua." }
+];
+
+const timeline = document.getElementById("timeline");
+const wrapper = document.getElementById("timelineWrapper");
+const startX = 150;
+const step = 135;
+
+eventos.forEach((ev, idx) => {
+    const eventoDiv = document.createElement("div");
+    eventoDiv.className = "evento";
+    const leftPos = startX + idx * step;
+    eventoDiv.style.left = leftPos + "px";
+
+    const punto = document.createElement("div");
+    punto.className = `punto ${ev.tipo}`;
+    eventoDiv.appendChild(punto);
+
+    const infoDiv = document.createElement("div");
+    infoDiv.className = "info";
+    const fechaSpan = document.createElement("div");
+    fechaSpan.className = "fecha";
+    fechaSpan.innerText = ev.fecha;
+    const tituloSpan = document.createElement("div");
+    tituloSpan.className = "titulo";
+    tituloSpan.innerText = ev.titulo;
+    infoDiv.appendChild(fechaSpan);
+    infoDiv.appendChild(tituloSpan);
+    eventoDiv.appendChild(infoDiv);
+
+    const offsetLevels = [25, 85, 50, 115];
+    const offsetY = offsetLevels[idx % offsetLevels.length];
+    infoDiv.style.top = (offsetY + 10) + "px";
+    eventoDiv.style.top = "0px";
+
+    const lineaConectora = document.createElement("div");
+    lineaConectora.style.position = "absolute";
+    lineaConectora.style.left = "50%";
+    lineaConectora.style.transform = "translateX(-50%)";
+    lineaConectora.style.top = "16px";
+    lineaConectora.style.width = "1px";
+    lineaConectora.style.height = (offsetY - 6) + "px";
+    lineaConectora.style.background = "cyan";
+    lineaConectora.style.pointerEvents = "none";
+    lineaConectora.style.zIndex = "1";
+    eventoDiv.appendChild(lineaConectora);
+
+    eventoDiv.addEventListener("click", () => {
+        abrirModal(ev.fecha, ev.titulo, ev.texto);
+    });
+    timeline.appendChild(eventoDiv);
+});
+
+// Períodos del CRONO4
+const periodos = [
+    { nombre: "Alto Imperio (Pax Romana)", desde: 0, hasta: 16, imagen: "1-ai.jpg" },
+    { nombre: "Crisis del siglo III",       desde: 17, hasta: 21, imagen: "2-c3.jpg" },
+    { nombre: "Bajo Imperio / Tardoimperio",desde: 22, hasta: 39, imagen: "3-bi.jpg" }
+];
+
+const bracketY = 200;
+periodos.forEach(p => {
+    const xIzq = startX + p.desde * step;
+    const xDer = startX + p.hasta * step;
+    const ancho = xDer - xIzq;
+    const esUnico = ancho === 0;
+    const bracketDiv = document.createElement("div");
+    bracketDiv.style.position = "absolute";
+    bracketDiv.style.left = xIzq + "px";
+    bracketDiv.style.top = bracketY + "px";
+    bracketDiv.style.width = ancho + "px";
+    bracketDiv.style.pointerEvents = "none";
+    if (!esUnico) {
+        const lineaH = document.createElement("div");
+        lineaH.style.position = "absolute";
+        lineaH.style.top = "0";
+        lineaH.style.left = "0";
+        lineaH.style.width = "100%";
+        lineaH.style.height = "1px";
+        lineaH.style.background = "cyan";
+        bracketDiv.appendChild(lineaH);
+        const tickIzq = document.createElement("div");
+        tickIzq.style.position = "absolute";
+        tickIzq.style.left = "0";
+        tickIzq.style.top = "-10px";
+        tickIzq.style.width = "1px";
+        tickIzq.style.height = "10px";
+        tickIzq.style.background = "cyan";
+        bracketDiv.appendChild(tickIzq);
+        const tickDer = document.createElement("div");
+        tickDer.style.position = "absolute";
+        tickDer.style.right = "0";
+        tickDer.style.top = "-10px";
+        tickDer.style.width = "1px";
+        tickDer.style.height = "10px";
+        tickDer.style.background = "cyan";
+        bracketDiv.appendChild(tickDer);
+    }
+    const etiqueta = document.createElement("div");
+    etiqueta.style.position = "absolute";
+    etiqueta.style.top = "8px";
+    etiqueta.style.left = "50%";
+    etiqueta.style.transform = "translateX(-50%)";
+    etiqueta.style.color = "white";
+    etiqueta.style.fontSize = "0.95rem";
+    etiqueta.style.fontWeight = "bold";
+    etiqueta.style.whiteSpace = "nowrap";
+    etiqueta.innerText = p.nombre;
+    bracketDiv.appendChild(etiqueta);
+    const imgSrc = "../../imagenes/" + p.imagen;
+    const frameAncho = 307;
+    const centroLocal = ancho / 2;
+    const frame = document.createElement("div");
+    frame.className = "frame-imagen";
+    frame.style.left = (centroLocal - frameAncho / 2) + "px";
+    frame.style.top = "45px";
+    const imgEl = document.createElement("img");
+    imgEl.src = imgSrc;
+    imgEl.alt = p.nombre;
+    frame.appendChild(imgEl);
+    frame.addEventListener("click", () => abrirModalImagen(imgSrc));
+    bracketDiv.appendChild(frame);
+    timeline.appendChild(bracketDiv);
+});
+
+// ===================== AUDIOS CON RUTAS CORREGIDAS =====================
+// Todas las rutas ahora incluyen "audio/" antes del nombre del mp3, excepto rc2.mp3 (redes transaharianas)
+const audioJesusNazaret = new Audio("../../estudiar/fenicios-hebreos/audio/fe10.mp3");
+const btnPlayJesusNazaret = document.createElement("div");
+btnPlayJesusNazaret.title = "Escuchar audio: Jesús de Nazaret";
+btnPlayJesusNazaret.style.cssText = "position:absolute;left:270px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayJesusNazaret.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingJesusNazaret = false;
+btnPlayJesusNazaret.addEventListener("click", () => {
+    if (playingJesusNazaret) {
+        audioJesusNazaret.pause();
+        audioJesusNazaret.currentTime = 0;
+        btnPlayJesusNazaret.style.background = "#ff8c00";
+        playingJesusNazaret = false;
+    } else {
+        audioJesusNazaret.play();
+        btnPlayJesusNazaret.style.background = "#cc6f00";
+        playingJesusNazaret = true;
+    }
+});
+audioJesusNazaret.addEventListener("ended", () => {
+    btnPlayJesusNazaret.style.background = "#ff8c00";
+    playingJesusNazaret = false;
+});
+timeline.appendChild(btnPlayJesusNazaret);
+
+const audioMuerteAugusto = new Audio("../../estudiar/roma/audio/r21.mp3");
+const btnPlayMuerteAugusto = document.createElement("div");
+btnPlayMuerteAugusto.title = "Escuchar audio: Muerte de Augusto";
+btnPlayMuerteAugusto.style.cssText = "position:absolute;left:405px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayMuerteAugusto.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingMuerteAugusto = false;
+btnPlayMuerteAugusto.addEventListener("click", () => {
+    if (playingMuerteAugusto) {
+        audioMuerteAugusto.pause();
+        audioMuerteAugusto.currentTime = 0;
+        btnPlayMuerteAugusto.style.background = "#ff8c00";
+        playingMuerteAugusto = false;
+    } else {
+        audioMuerteAugusto.play();
+        btnPlayMuerteAugusto.style.background = "#cc6f00";
+        playingMuerteAugusto = true;
+    }
+});
+audioMuerteAugusto.addEventListener("ended", () => {
+    btnPlayMuerteAugusto.style.background = "#ff8c00";
+    playingMuerteAugusto = false;
+});
+timeline.appendChild(btnPlayMuerteAugusto);
+
+const audioExpCristianismo = new Audio("../../estudiar/fenicios-hebreos/audio/fe11.mp3");
+const btnPlayExpCristianismo = document.createElement("div");
+btnPlayExpCristianismo.title = "Escuchar audio: Expansión inicial del cristianismo";
+btnPlayExpCristianismo.style.cssText = "position:absolute;left:540px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayExpCristianismo.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingExpCristianismo = false;
+btnPlayExpCristianismo.addEventListener("click", () => {
+    if (playingExpCristianismo) {
+        audioExpCristianismo.pause();
+        audioExpCristianismo.currentTime = 0;
+        btnPlayExpCristianismo.style.background = "#ff8c00";
+        playingExpCristianismo = false;
+    } else {
+        audioExpCristianismo.play();
+        btnPlayExpCristianismo.style.background = "#cc6f00";
+        playingExpCristianismo = true;
+    }
+});
+audioExpCristianismo.addEventListener("ended", () => {
+    btnPlayExpCristianismo.style.background = "#ff8c00";
+    playingExpCristianismo = false;
+});
+timeline.appendChild(btnPlayExpCristianismo);
+
+const audioIncendioRoma = new Audio("../../estudiar/roma/audio/r22.mp3");
+const btnPlayIncendioRoma = document.createElement("div");
+btnPlayIncendioRoma.title = "Escuchar audio: Gran incendio de Roma";
+btnPlayIncendioRoma.style.cssText = "position:absolute;left:675px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayIncendioRoma.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingIncendioRoma = false;
+btnPlayIncendioRoma.addEventListener("click", () => {
+    if (playingIncendioRoma) {
+        audioIncendioRoma.pause();
+        audioIncendioRoma.currentTime = 0;
+        btnPlayIncendioRoma.style.background = "#ff8c00";
+        playingIncendioRoma = false;
+    } else {
+        audioIncendioRoma.play();
+        btnPlayIncendioRoma.style.background = "#cc6f00";
+        playingIncendioRoma = true;
+    }
+});
+audioIncendioRoma.addEventListener("ended", () => {
+    btnPlayIncendioRoma.style.background = "#ff8c00";
+    playingIncendioRoma = false;
+});
+timeline.appendChild(btnPlayIncendioRoma);
+
+const audioTemploJerusalem = new Audio("../../estudiar/fenicios-hebreos/audio/fe12.mp3");
+const btnPlayTemploJerusalem = document.createElement("div");
+btnPlayTemploJerusalem.title = "Escuchar audio: Destrucción del Templo de Jerusalén";
+btnPlayTemploJerusalem.style.cssText = "position:absolute;left:810px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayTemploJerusalem.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingTemploJerusalem = false;
+btnPlayTemploJerusalem.addEventListener("click", () => {
+    if (playingTemploJerusalem) {
+        audioTemploJerusalem.pause();
+        audioTemploJerusalem.currentTime = 0;
+        btnPlayTemploJerusalem.style.background = "#ff8c00";
+        playingTemploJerusalem = false;
+    } else {
+        audioTemploJerusalem.play();
+        btnPlayTemploJerusalem.style.background = "#cc6f00";
+        playingTemploJerusalem = true;
+    }
+});
+audioTemploJerusalem.addEventListener("ended", () => {
+    btnPlayTemploJerusalem.style.background = "#ff8c00";
+    playingTemploJerusalem = false;
+});
+timeline.appendChild(btnPlayTemploJerusalem);
+
+const audioVesubio = new Audio("../../estudiar/roma/audio/r23.mp3");
+const btnPlayVesubio = document.createElement("div");
+btnPlayVesubio.title = "Escuchar audio: Erupción del Vesubio";
+btnPlayVesubio.style.cssText = "position:absolute;left:945px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayVesubio.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingVesubio = false;
+btnPlayVesubio.addEventListener("click", () => {
+    if (playingVesubio) {
+        audioVesubio.pause();
+        audioVesubio.currentTime = 0;
+        btnPlayVesubio.style.background = "#ff8c00";
+        playingVesubio = false;
+    } else {
+        audioVesubio.play();
+        btnPlayVesubio.style.background = "#cc6f00";
+        playingVesubio = true;
+    }
+});
+audioVesubio.addEventListener("ended", () => {
+    btnPlayVesubio.style.background = "#ff8c00";
+    playingVesubio = false;
+});
+timeline.appendChild(btnPlayVesubio);
+
+const audioMaxExpImperio = new Audio("../../estudiar/roma/audio/r24.mp3");
+const btnPlayMaxExpImperio = document.createElement("div");
+btnPlayMaxExpImperio.title = "Escuchar audio: Máxima expansión del Imperio";
+btnPlayMaxExpImperio.style.cssText = "position:absolute;left:1080px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayMaxExpImperio.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingMaxExpImperio = false;
+btnPlayMaxExpImperio.addEventListener("click", () => {
+    if (playingMaxExpImperio) {
+        audioMaxExpImperio.pause();
+        audioMaxExpImperio.currentTime = 0;
+        btnPlayMaxExpImperio.style.background = "#ff8c00";
+        playingMaxExpImperio = false;
+    } else {
+        audioMaxExpImperio.play();
+        btnPlayMaxExpImperio.style.background = "#cc6f00";
+        playingMaxExpImperio = true;
+    }
+});
+audioMaxExpImperio.addEventListener("ended", () => {
+    btnPlayMaxExpImperio.style.background = "#ff8c00";
+    playingMaxExpImperio = false;
+});
+timeline.appendChild(btnPlayMaxExpImperio);
+
+const audioAdriano = new Audio("../../estudiar/roma/audio/r25.mp3");
+const btnPlayAdriano = document.createElement("div");
+btnPlayAdriano.title = "Escuchar audio: Adriano";
+btnPlayAdriano.style.cssText = "position:absolute;left:1350px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayAdriano.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingAdriano = false;
+btnPlayAdriano.addEventListener("click", () => {
+    if (playingAdriano) {
+        audioAdriano.pause();
+        audioAdriano.currentTime = 0;
+        btnPlayAdriano.style.background = "#ff8c00";
+        playingAdriano = false;
+    } else {
+        audioAdriano.play();
+        btnPlayAdriano.style.background = "#cc6f00";
+        playingAdriano = true;
+    }
+});
+audioAdriano.addEventListener("ended", () => {
+    btnPlayAdriano.style.background = "#ff8c00";
+    playingAdriano = false;
+});
+timeline.appendChild(btnPlayAdriano);
+
+const audioTeotihuacan = new Audio("../../estudiar/america/audio/aa12.mp3");
+const btnPlayTeotihuacan = document.createElement("div");
+btnPlayTeotihuacan.title = "Escuchar audio: Teotihuacán";
+btnPlayTeotihuacan.style.cssText = "position:absolute;left:1485px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayTeotihuacan.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingTeotihuacan = false;
+btnPlayTeotihuacan.addEventListener("click", () => {
+    if (playingTeotihuacan) {
+        audioTeotihuacan.pause();
+        audioTeotihuacan.currentTime = 0;
+        btnPlayTeotihuacan.style.background = "#ff8c00";
+        playingTeotihuacan = false;
+    } else {
+        audioTeotihuacan.play();
+        btnPlayTeotihuacan.style.background = "#cc6f00";
+        playingTeotihuacan = true;
+    }
+});
+audioTeotihuacan.addEventListener("ended", () => {
+    btnPlayTeotihuacan.style.background = "#ff8c00";
+    playingTeotihuacan = false;
+});
+timeline.appendChild(btnPlayTeotihuacan);
+
+const audioBarKojba = new Audio("../../estudiar/fenicios-hebreos/audio/fe13.mp3");
+const btnPlayBarKojba = document.createElement("div");
+btnPlayBarKojba.title = "Escuchar audio: Rebelión de Bar Kojba";
+btnPlayBarKojba.style.cssText = "position:absolute;left:1620px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayBarKojba.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingBarKojba = false;
+btnPlayBarKojba.addEventListener("click", () => {
+    if (playingBarKojba) {
+        audioBarKojba.pause();
+        audioBarKojba.currentTime = 0;
+        btnPlayBarKojba.style.background = "#ff8c00";
+        playingBarKojba = false;
+    } else {
+        audioBarKojba.play();
+        btnPlayBarKojba.style.background = "#cc6f00";
+        playingBarKojba = true;
+    }
+});
+audioBarKojba.addEventListener("ended", () => {
+    btnPlayBarKojba.style.background = "#ff8c00";
+    playingBarKojba = false;
+});
+timeline.appendChild(btnPlayBarKojba);
+
+const audioMarcoAurelio = new Audio("../../estudiar/roma/audio/r26.mp3");
+const btnPlayMarcoAurelio = document.createElement("div");
+btnPlayMarcoAurelio.title = "Escuchar audio: Marco Aurelio";
+btnPlayMarcoAurelio.style.cssText = "position:absolute;left:1755px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayMarcoAurelio.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingMarcoAurelio = false;
+btnPlayMarcoAurelio.addEventListener("click", () => {
+    if (playingMarcoAurelio) {
+        audioMarcoAurelio.pause();
+        audioMarcoAurelio.currentTime = 0;
+        btnPlayMarcoAurelio.style.background = "#ff8c00";
+        playingMarcoAurelio = false;
+    } else {
+        audioMarcoAurelio.play();
+        btnPlayMarcoAurelio.style.background = "#cc6f00";
+        playingMarcoAurelio = true;
+    }
+});
+audioMarcoAurelio.addEventListener("ended", () => {
+    btnPlayMarcoAurelio.style.background = "#ff8c00";
+    playingMarcoAurelio = false;
+});
+timeline.appendChild(btnPlayMarcoAurelio);
+
+const audioPesteAntonina = new Audio("../../estudiar/roma/audio/r27.mp3");
+const btnPlayPesteAntonina = document.createElement("div");
+btnPlayPesteAntonina.title = "Escuchar audio: Peste antonina";
+btnPlayPesteAntonina.style.cssText = "position:absolute;left:1890px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayPesteAntonina.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingPesteAntonina = false;
+btnPlayPesteAntonina.addEventListener("click", () => {
+    if (playingPesteAntonina) {
+        audioPesteAntonina.pause();
+        audioPesteAntonina.currentTime = 0;
+        btnPlayPesteAntonina.style.background = "#ff8c00";
+        playingPesteAntonina = false;
+    } else {
+        audioPesteAntonina.play();
+        btnPlayPesteAntonina.style.background = "#cc6f00";
+        playingPesteAntonina = true;
+    }
+});
+audioPesteAntonina.addEventListener("ended", () => {
+    btnPlayPesteAntonina.style.background = "#ff8c00";
+    playingPesteAntonina = false;
+});
+timeline.appendChild(btnPlayPesteAntonina);
+
+const audioFinPaxRomana = new Audio("../../estudiar/roma/audio/r28.mp3");
+const btnPlayFinPaxRomana = document.createElement("div");
+btnPlayFinPaxRomana.title = "Escuchar audio: Fin de la Pax Romana";
+btnPlayFinPaxRomana.style.cssText = "position:absolute;left:2025px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayFinPaxRomana.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingFinPaxRomana = false;
+btnPlayFinPaxRomana.addEventListener("click", () => {
+    if (playingFinPaxRomana) {
+        audioFinPaxRomana.pause();
+        audioFinPaxRomana.currentTime = 0;
+        btnPlayFinPaxRomana.style.background = "#ff8c00";
+        playingFinPaxRomana = false;
+    } else {
+        audioFinPaxRomana.play();
+        btnPlayFinPaxRomana.style.background = "#cc6f00";
+        playingFinPaxRomana = true;
+    }
+});
+audioFinPaxRomana.addEventListener("ended", () => {
+    btnPlayFinPaxRomana.style.background = "#ff8c00";
+    playingFinPaxRomana = false;
+});
+timeline.appendChild(btnPlayFinPaxRomana);
+
+const audioDesaMaya = new Audio("../../estudiar/america/audio/aa13.mp3");
+const btnPlayDesaMaya = document.createElement("div");
+btnPlayDesaMaya.title = "Escuchar audio: Desarrollo maya clásico";
+btnPlayDesaMaya.style.cssText = "position:absolute;left:2160px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayDesaMaya.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingDesaMaya = false;
+btnPlayDesaMaya.addEventListener("click", () => {
+    if (playingDesaMaya) {
+        audioDesaMaya.pause();
+        audioDesaMaya.currentTime = 0;
+        btnPlayDesaMaya.style.background = "#ff8c00";
+        playingDesaMaya = false;
+    } else {
+        audioDesaMaya.play();
+        btnPlayDesaMaya.style.background = "#cc6f00";
+        playingDesaMaya = true;
+    }
+});
+audioDesaMaya.addEventListener("ended", () => {
+    btnPlayDesaMaya.style.background = "#ff8c00";
+    playingDesaMaya = false;
+});
+timeline.appendChild(btnPlayDesaMaya);
+
+const audioEdicCaracalla = new Audio("../../estudiar/roma/audio/r29.mp3");
+const btnPlayEdicCaracalla = document.createElement("div");
+btnPlayEdicCaracalla.title = "Escuchar audio: Edicto de Caracalla";
+btnPlayEdicCaracalla.style.cssText = "position:absolute;left:2295px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayEdicCaracalla.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingEdicCaracalla = false;
+btnPlayEdicCaracalla.addEventListener("click", () => {
+    if (playingEdicCaracalla) {
+        audioEdicCaracalla.pause();
+        audioEdicCaracalla.currentTime = 0;
+        btnPlayEdicCaracalla.style.background = "#ff8c00";
+        playingEdicCaracalla = false;
+    } else {
+        audioEdicCaracalla.play();
+        btnPlayEdicCaracalla.style.background = "#cc6f00";
+        playingEdicCaracalla = true;
+    }
+});
+audioEdicCaracalla.addEventListener("ended", () => {
+    btnPlayEdicCaracalla.style.background = "#ff8c00";
+    playingEdicCaracalla = false;
+});
+timeline.appendChild(btnPlayEdicCaracalla);
+
+const audioImpSasanida = new Audio("../../estudiar/mesopotamia/audio/m15.mp3");
+const btnPlayImpSasanida = document.createElement("div");
+btnPlayImpSasanida.title = "Escuchar audio: Imperio sasánida";
+btnPlayImpSasanida.style.cssText = "position:absolute;left:2430px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayImpSasanida.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingImpSasanida = false;
+btnPlayImpSasanida.addEventListener("click", () => {
+    if (playingImpSasanida) {
+        audioImpSasanida.pause();
+        audioImpSasanida.currentTime = 0;
+        btnPlayImpSasanida.style.background = "#ff8c00";
+        playingImpSasanida = false;
+    } else {
+        audioImpSasanida.play();
+        btnPlayImpSasanida.style.background = "#cc6f00";
+        playingImpSasanida = true;
+    }
+});
+audioImpSasanida.addEventListener("ended", () => {
+    btnPlayImpSasanida.style.background = "#ff8c00";
+    playingImpSasanida = false;
+});
+timeline.appendChild(btnPlayImpSasanida);
+
+const audioCrisisSigloIII = new Audio("../../estudiar/roma/audio/r30.mp3");
+const btnPlayCrisisSigloIII = document.createElement("div");
+btnPlayCrisisSigloIII.title = "Escuchar audio: Crisis del siglo III";
+btnPlayCrisisSigloIII.style.cssText = "position:absolute;left:2565px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayCrisisSigloIII.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingCrisisSigloIII = false;
+btnPlayCrisisSigloIII.addEventListener("click", () => {
+    if (playingCrisisSigloIII) {
+        audioCrisisSigloIII.pause();
+        audioCrisisSigloIII.currentTime = 0;
+        btnPlayCrisisSigloIII.style.background = "#ff8c00";
+        playingCrisisSigloIII = false;
+    } else {
+        audioCrisisSigloIII.play();
+        btnPlayCrisisSigloIII.style.background = "#cc6f00";
+        playingCrisisSigloIII = true;
+    }
+});
+audioCrisisSigloIII.addEventListener("ended", () => {
+    btnPlayCrisisSigloIII.style.background = "#ff8c00";
+    playingCrisisSigloIII = false;
+});
+timeline.appendChild(btnPlayCrisisSigloIII);
+
+const audioPersDecio = new Audio("../../estudiar/roma/audio/r31.mp3");
+const btnPlayPersDecio = document.createElement("div");
+btnPlayPersDecio.title = "Escuchar audio: Persecución de Decio";
+btnPlayPersDecio.style.cssText = "position:absolute;left:2700px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayPersDecio.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingPersDecio = false;
+btnPlayPersDecio.addEventListener("click", () => {
+    if (playingPersDecio) {
+        audioPersDecio.pause();
+        audioPersDecio.currentTime = 0;
+        btnPlayPersDecio.style.background = "#ff8c00";
+        playingPersDecio = false;
+    } else {
+        audioPersDecio.play();
+        btnPlayPersDecio.style.background = "#cc6f00";
+        playingPersDecio = true;
+    }
+});
+audioPersDecio.addEventListener("ended", () => {
+    btnPlayPersDecio.style.background = "#ff8c00";
+    playingPersDecio = false;
+});
+timeline.appendChild(btnPlayPersDecio);
+
+const audioFragImperial = new Audio("../../estudiar/roma/audio/r32.mp3");
+const btnPlayFragImperial = document.createElement("div");
+btnPlayFragImperial.title = "Escuchar audio: Fragmentación imperial";
+btnPlayFragImperial.style.cssText = "position:absolute;left:2835px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayFragImperial.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingFragImperial = false;
+btnPlayFragImperial.addEventListener("click", () => {
+    if (playingFragImperial) {
+        audioFragImperial.pause();
+        audioFragImperial.currentTime = 0;
+        btnPlayFragImperial.style.background = "#ff8c00";
+        playingFragImperial = false;
+    } else {
+        audioFragImperial.play();
+        btnPlayFragImperial.style.background = "#cc6f00";
+        playingFragImperial = true;
+    }
+});
+audioFragImperial.addEventListener("ended", () => {
+    btnPlayFragImperial.style.background = "#ff8c00";
+    playingFragImperial = false;
+});
+timeline.appendChild(btnPlayFragImperial);
+
+// EXCEPCIÓN: la ruta de redes comerciales transaharianas se queda exactamente igual (sin /audio/)
+const audioRedesTransah = new Audio("../../estudiar/comparadas/rc2.mp3");
+const btnPlayRedesTransah = document.createElement("div");
+btnPlayRedesTransah.title = "Escuchar audio: Redes comerciales transaharianas";
+btnPlayRedesTransah.style.cssText = "position:absolute;left:2970px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayRedesTransah.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingRedesTransah = false;
+btnPlayRedesTransah.addEventListener("click", () => {
+    if (playingRedesTransah) {
+        audioRedesTransah.pause();
+        audioRedesTransah.currentTime = 0;
+        btnPlayRedesTransah.style.background = "#ff8c00";
+        playingRedesTransah = false;
+    } else {
+        audioRedesTransah.play();
+        btnPlayRedesTransah.style.background = "#cc6f00";
+        playingRedesTransah = true;
+    }
+});
+audioRedesTransah.addEventListener("ended", () => {
+    btnPlayRedesTransah.style.background = "#ff8c00";
+    playingRedesTransah = false;
+});
+timeline.appendChild(btnPlayRedesTransah);
+
+const audioDiocleciano = new Audio("../../estudiar/roma/audio/r33.mp3");
+const btnPlayDiocleciano = document.createElement("div");
+btnPlayDiocleciano.title = "Escuchar audio: Diocleciano";
+btnPlayDiocleciano.style.cssText = "position:absolute;left:3105px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayDiocleciano.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingDiocleciano = false;
+btnPlayDiocleciano.addEventListener("click", () => {
+    if (playingDiocleciano) {
+        audioDiocleciano.pause();
+        audioDiocleciano.currentTime = 0;
+        btnPlayDiocleciano.style.background = "#ff8c00";
+        playingDiocleciano = false;
+    } else {
+        audioDiocleciano.play();
+        btnPlayDiocleciano.style.background = "#cc6f00";
+        playingDiocleciano = true;
+    }
+});
+audioDiocleciano.addEventListener("ended", () => {
+    btnPlayDiocleciano.style.background = "#ff8c00";
+    playingDiocleciano = false;
+});
+timeline.appendChild(btnPlayDiocleciano);
+
+const audioTetraquia = new Audio("../../estudiar/roma/audio/r34.mp3");
+const btnPlayTetraquia = document.createElement("div");
+btnPlayTetraquia.title = "Escuchar audio: Tetrarquía";
+btnPlayTetraquia.style.cssText = "position:absolute;left:3240px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayTetraquia.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingTetraquia = false;
+btnPlayTetraquia.addEventListener("click", () => {
+    if (playingTetraquia) {
+        audioTetraquia.pause();
+        audioTetraquia.currentTime = 0;
+        btnPlayTetraquia.style.background = "#ff8c00";
+        playingTetraquia = false;
+    } else {
+        audioTetraquia.play();
+        btnPlayTetraquia.style.background = "#cc6f00";
+        playingTetraquia = true;
+    }
+});
+audioTetraquia.addEventListener("ended", () => {
+    btnPlayTetraquia.style.background = "#ff8c00";
+    playingTetraquia = false;
+});
+timeline.appendChild(btnPlayTetraquia);
+
+const audioAugeMaya = new Audio("../../estudiar/america/audio/aa14.mp3");
+const btnPlayAugeMaya = document.createElement("div");
+btnPlayAugeMaya.title = "Escuchar audio: Auge maya clásico";
+btnPlayAugeMaya.style.cssText = "position:absolute;left:3375px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayAugeMaya.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingAugeMaya = false;
+btnPlayAugeMaya.addEventListener("click", () => {
+    if (playingAugeMaya) {
+        audioAugeMaya.pause();
+        audioAugeMaya.currentTime = 0;
+        btnPlayAugeMaya.style.background = "#ff8c00";
+        playingAugeMaya = false;
+    } else {
+        audioAugeMaya.play();
+        btnPlayAugeMaya.style.background = "#cc6f00";
+        playingAugeMaya = true;
+    }
+});
+audioAugeMaya.addEventListener("ended", () => {
+    btnPlayAugeMaya.style.background = "#ff8c00";
+    playingAugeMaya = false;
+});
+timeline.appendChild(btnPlayAugeMaya);
+
+const audioAscConstantino = new Audio("../../estudiar/roma/audio/r35.mp3");
+const btnPlayAscConstantino = document.createElement("div");
+btnPlayAscConstantino.title = "Escuchar audio: Ascenso de Constantino";
+btnPlayAscConstantino.style.cssText = "position:absolute;left:3510px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayAscConstantino.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingAscConstantino = false;
+btnPlayAscConstantino.addEventListener("click", () => {
+    if (playingAscConstantino) {
+        audioAscConstantino.pause();
+        audioAscConstantino.currentTime = 0;
+        btnPlayAscConstantino.style.background = "#ff8c00";
+        playingAscConstantino = false;
+    } else {
+        audioAscConstantino.play();
+        btnPlayAscConstantino.style.background = "#cc6f00";
+        playingAscConstantino = true;
+    }
+});
+audioAscConstantino.addEventListener("ended", () => {
+    btnPlayAscConstantino.style.background = "#ff8c00";
+    playingAscConstantino = false;
+});
+timeline.appendChild(btnPlayAscConstantino);
+
+const audioBatPuMilvio = new Audio("../../estudiar/roma/audio/r36.mp3");
+const btnPlayBatPuMilvio = document.createElement("div");
+btnPlayBatPuMilvio.title = "Escuchar audio: Batalla del Puente Milvio";
+btnPlayBatPuMilvio.style.cssText = "position:absolute;left:3645px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayBatPuMilvio.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingBatPuMilvio = false;
+btnPlayBatPuMilvio.addEventListener("click", () => {
+    if (playingBatPuMilvio) {
+        audioBatPuMilvio.pause();
+        audioBatPuMilvio.currentTime = 0;
+        btnPlayBatPuMilvio.style.background = "#ff8c00";
+        playingBatPuMilvio = false;
+    } else {
+        audioBatPuMilvio.play();
+        btnPlayBatPuMilvio.style.background = "#cc6f00";
+        playingBatPuMilvio = true;
+    }
+});
+audioBatPuMilvio.addEventListener("ended", () => {
+    btnPlayBatPuMilvio.style.background = "#ff8c00";
+    playingBatPuMilvio = false;
+});
+timeline.appendChild(btnPlayBatPuMilvio);
+
+const audioEdicMilan = new Audio("../../estudiar/roma/audio/r37.mp3");
+const btnPlayEdicMilan = document.createElement("div");
+btnPlayEdicMilan.title = "Escuchar audio: Edicto de Milán";
+btnPlayEdicMilan.style.cssText = "position:absolute;left:3780px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayEdicMilan.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingEdicMilan = false;
+btnPlayEdicMilan.addEventListener("click", () => {
+    if (playingEdicMilan) {
+        audioEdicMilan.pause();
+        audioEdicMilan.currentTime = 0;
+        btnPlayEdicMilan.style.background = "#ff8c00";
+        playingEdicMilan = false;
+    } else {
+        audioEdicMilan.play();
+        btnPlayEdicMilan.style.background = "#cc6f00";
+        playingEdicMilan = true;
+    }
+});
+audioEdicMilan.addEventListener("ended", () => {
+    btnPlayEdicMilan.style.background = "#ff8c00";
+    playingEdicMilan = false;
+});
+timeline.appendChild(btnPlayEdicMilan);
+
+const audioFundConstpla = new Audio("../../estudiar/roma/audio/r38.mp3");
+const btnPlayFundConstpla = document.createElement("div");
+btnPlayFundConstpla.title = "Escuchar audio: Fundación de Constantinopla";
+btnPlayFundConstpla.style.cssText = "position:absolute;left:3915px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayFundConstpla.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingFundConstpla = false;
+btnPlayFundConstpla.addEventListener("click", () => {
+    if (playingFundConstpla) {
+        audioFundConstpla.pause();
+        audioFundConstpla.currentTime = 0;
+        btnPlayFundConstpla.style.background = "#ff8c00";
+        playingFundConstpla = false;
+    } else {
+        audioFundConstpla.play();
+        btnPlayFundConstpla.style.background = "#cc6f00";
+        playingFundConstpla = true;
+    }
+});
+audioFundConstpla.addEventListener("ended", () => {
+    btnPlayFundConstpla.style.background = "#ff8c00";
+    playingFundConstpla = false;
+});
+timeline.appendChild(btnPlayFundConstpla);
+
+const audioConNicea = new Audio("../../estudiar/roma/audio/r49.mp3");
+const btnPlayConNicea = document.createElement("div");
+btnPlayConNicea.title = "Escuchar audio: Concilio de Nicea";
+btnPlayConNicea.style.cssText = "position:absolute;left:4050px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayConNicea.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingConNicea = false;
+btnPlayConNicea.addEventListener("click", () => {
+    if (playingConNicea) {
+        audioConNicea.pause();
+        audioConNicea.currentTime = 0;
+        btnPlayConNicea.style.background = "#ff8c00";
+        playingConNicea = false;
+    } else {
+        audioConNicea.play();
+        btnPlayConNicea.style.background = "#cc6f00";
+        playingConNicea = true;
+    }
+});
+audioConNicea.addEventListener("ended", () => {
+    btnPlayConNicea.style.background = "#ff8c00";
+    playingConNicea = false;
+});
+timeline.appendChild(btnPlayConNicea);
+
+const audioMigrGerm = new Audio("../../estudiar/roma/audio/r39.mp3");
+const btnPlayMigrGerm = document.createElement("div");
+btnPlayMigrGerm.title = "Escuchar audio: Migraciones germánicas";
+btnPlayMigrGerm.style.cssText = "position:absolute;left:4320px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayMigrGerm.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingMigrGerm = false;
+btnPlayMigrGerm.addEventListener("click", () => {
+    if (playingMigrGerm) {
+        audioMigrGerm.pause();
+        audioMigrGerm.currentTime = 0;
+        btnPlayMigrGerm.style.background = "#ff8c00";
+        playingMigrGerm = false;
+    } else {
+        audioMigrGerm.play();
+        btnPlayMigrGerm.style.background = "#cc6f00";
+        playingMigrGerm = true;
+    }
+});
+audioMigrGerm.addEventListener("ended", () => {
+    btnPlayMigrGerm.style.background = "#ff8c00";
+    playingMigrGerm = false;
+});
+timeline.appendChild(btnPlayMigrGerm);
+
+const audioEntVisigodos = new Audio("../../estudiar/roma/audio/r40.mp3");
+const btnPlayEntVisigodos = document.createElement("div");
+btnPlayEntVisigodos.title = "Escuchar audio: Entrada de los visigodos";
+btnPlayEntVisigodos.style.cssText = "position:absolute;left:4455px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayEntVisigodos.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingEntVisigodos = false;
+btnPlayEntVisigodos.addEventListener("click", () => {
+    if (playingEntVisigodos) {
+        audioEntVisigodos.pause();
+        audioEntVisigodos.currentTime = 0;
+        btnPlayEntVisigodos.style.background = "#ff8c00";
+        playingEntVisigodos = false;
+    } else {
+        audioEntVisigodos.play();
+        btnPlayEntVisigodos.style.background = "#cc6f00";
+        playingEntVisigodos = true;
+    }
+});
+audioEntVisigodos.addEventListener("ended", () => {
+    btnPlayEntVisigodos.style.background = "#ff8c00";
+    playingEntVisigodos = false;
+});
+timeline.appendChild(btnPlayEntVisigodos);
+
+const audioAdrianopolis = new Audio("../../estudiar/roma/audio/r41.mp3");
+const btnPlayAdrianopolis = document.createElement("div");
+btnPlayAdrianopolis.title = "Escuchar audio: Adrianópolis";
+btnPlayAdrianopolis.style.cssText = "position:absolute;left:4590px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayAdrianopolis.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingAdrianopolis = false;
+btnPlayAdrianopolis.addEventListener("click", () => {
+    if (playingAdrianopolis) {
+        audioAdrianopolis.pause();
+        audioAdrianopolis.currentTime = 0;
+        btnPlayAdrianopolis.style.background = "#ff8c00";
+        playingAdrianopolis = false;
+    } else {
+        audioAdrianopolis.play();
+        btnPlayAdrianopolis.style.background = "#cc6f00";
+        playingAdrianopolis = true;
+    }
+});
+audioAdrianopolis.addEventListener("ended", () => {
+    btnPlayAdrianopolis.style.background = "#ff8c00";
+    playingAdrianopolis = false;
+});
+timeline.appendChild(btnPlayAdrianopolis);
+
+const audioCristReligOfi = new Audio("../../estudiar/roma/audio/r42.mp3");
+const btnPlayCristReligOfi = document.createElement("div");
+btnPlayCristReligOfi.title = "Escuchar audio: Cristianismo religión oficial";
+btnPlayCristReligOfi.style.cssText = "position:absolute;left:4725px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayCristReligOfi.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingCristReligOfi = false;
+btnPlayCristReligOfi.addEventListener("click", () => {
+    if (playingCristReligOfi) {
+        audioCristReligOfi.pause();
+        audioCristReligOfi.currentTime = 0;
+        btnPlayCristReligOfi.style.background = "#ff8c00";
+        playingCristReligOfi = false;
+    } else {
+        audioCristReligOfi.play();
+        btnPlayCristReligOfi.style.background = "#cc6f00";
+        playingCristReligOfi = true;
+    }
+});
+audioCristReligOfi.addEventListener("ended", () => {
+    btnPlayCristReligOfi.style.background = "#ff8c00";
+    playingCristReligOfi = false;
+});
+timeline.appendChild(btnPlayCristReligOfi);
+
+const audioDivImperio = new Audio("../../estudiar/roma/audio/r43.mp3");
+const btnPlayDivImperio = document.createElement("div");
+btnPlayDivImperio.title = "Escuchar audio: División definitiva del Imperio";
+btnPlayDivImperio.style.cssText = "position:absolute;left:4860px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayDivImperio.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingDivImperio = false;
+btnPlayDivImperio.addEventListener("click", () => {
+    if (playingDivImperio) {
+        audioDivImperio.pause();
+        audioDivImperio.currentTime = 0;
+        btnPlayDivImperio.style.background = "#ff8c00";
+        playingDivImperio = false;
+    } else {
+        audioDivImperio.play();
+        btnPlayDivImperio.style.background = "#cc6f00";
+        playingDivImperio = true;
+    }
+});
+audioDivImperio.addEventListener("ended", () => {
+    btnPlayDivImperio.style.background = "#ff8c00";
+    playingDivImperio = false;
+});
+timeline.appendChild(btnPlayDivImperio);
+
+const audioSaqueoRoma = new Audio("../../estudiar/roma/audio/r44.mp3");
+const btnPlaySaqueoRoma = document.createElement("div");
+btnPlaySaqueoRoma.title = "Escuchar audio: Saqueo de Roma";
+btnPlaySaqueoRoma.style.cssText = "position:absolute;left:4995px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlaySaqueoRoma.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingSaqueoRoma = false;
+btnPlaySaqueoRoma.addEventListener("click", () => {
+    if (playingSaqueoRoma) {
+        audioSaqueoRoma.pause();
+        audioSaqueoRoma.currentTime = 0;
+        btnPlaySaqueoRoma.style.background = "#ff8c00";
+        playingSaqueoRoma = false;
+    } else {
+        audioSaqueoRoma.play();
+        btnPlaySaqueoRoma.style.background = "#cc6f00";
+        playingSaqueoRoma = true;
+    }
+});
+audioSaqueoRoma.addEventListener("ended", () => {
+    btnPlaySaqueoRoma.style.background = "#ff8c00";
+    playingSaqueoRoma = false;
+});
+timeline.appendChild(btnPlaySaqueoRoma);
+
+const audioVandAfric = new Audio("../../estudiar/roma/audio/r45.mp3");
+const btnPlayVandAfric = document.createElement("div");
+btnPlayVandAfric.title = "Escuchar audio: Vándalos en África";
+btnPlayVandAfric.style.cssText = "position:absolute;left:5130px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayVandAfric.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingVandAfric = false;
+btnPlayVandAfric.addEventListener("click", () => {
+    if (playingVandAfric) {
+        audioVandAfric.pause();
+        audioVandAfric.currentTime = 0;
+        btnPlayVandAfric.style.background = "#ff8c00";
+        playingVandAfric = false;
+    } else {
+        audioVandAfric.play();
+        btnPlayVandAfric.style.background = "#cc6f00";
+        playingVandAfric = true;
+    }
+});
+audioVandAfric.addEventListener("ended", () => {
+    btnPlayVandAfric.style.background = "#ff8c00";
+    playingVandAfric = false;
+});
+timeline.appendChild(btnPlayVandAfric);
+
+const audioCamposCatal = new Audio("../../estudiar/roma/audio/r46.mp3");
+const btnPlayCamposCatal = document.createElement("div");
+btnPlayCamposCatal.title = "Escuchar audio: Campos Cataláunicos";
+btnPlayCamposCatal.style.cssText = "position:absolute;left:5265px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayCamposCatal.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingCamposCatal = false;
+btnPlayCamposCatal.addEventListener("click", () => {
+    if (playingCamposCatal) {
+        audioCamposCatal.pause();
+        audioCamposCatal.currentTime = 0;
+        btnPlayCamposCatal.style.background = "#ff8c00";
+        playingCamposCatal = false;
+    } else {
+        audioCamposCatal.play();
+        btnPlayCamposCatal.style.background = "#cc6f00";
+        playingCamposCatal = true;
+    }
+});
+audioCamposCatal.addEventListener("ended", () => {
+    btnPlayCamposCatal.style.background = "#ff8c00";
+    playingCamposCatal = false;
+});
+timeline.appendChild(btnPlayCamposCatal);
+
+const audioSaqueoVandal = new Audio("../../estudiar/roma/audio/r47.mp3");
+const btnPlaySaqueoVandal = document.createElement("div");
+btnPlaySaqueoVandal.title = "Escuchar audio: Saqueo vándalo de Roma";
+btnPlaySaqueoVandal.style.cssText = "position:absolute;left:5400px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlaySaqueoVandal.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingSaqueoVandal = false;
+btnPlaySaqueoVandal.addEventListener("click", () => {
+    if (playingSaqueoVandal) {
+        audioSaqueoVandal.pause();
+        audioSaqueoVandal.currentTime = 0;
+        btnPlaySaqueoVandal.style.background = "#ff8c00";
+        playingSaqueoVandal = false;
+    } else {
+        audioSaqueoVandal.play();
+        btnPlaySaqueoVandal.style.background = "#cc6f00";
+        playingSaqueoVandal = true;
+    }
+});
+audioSaqueoVandal.addEventListener("ended", () => {
+    btnPlaySaqueoVandal.style.background = "#ff8c00";
+    playingSaqueoVandal = false;
+});
+timeline.appendChild(btnPlaySaqueoVandal);
+
+const audioCaidaImpOcc = new Audio("../../estudiar/roma/audio/r48.mp3");
+const btnPlayCaidaImpOcc = document.createElement("div");
+btnPlayCaidaImpOcc.title = "Escuchar audio: Caída del Imperio romano de Occidente";
+btnPlayCaidaImpOcc.style.cssText = "position:absolute;left:5535px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayCaidaImpOcc.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingCaidaImpOcc = false;
+btnPlayCaidaImpOcc.addEventListener("click", () => {
+    if (playingCaidaImpOcc) {
+        audioCaidaImpOcc.pause();
+        audioCaidaImpOcc.currentTime = 0;
+        btnPlayCaidaImpOcc.style.background = "#ff8c00";
+        playingCaidaImpOcc = false;
+    } else {
+        audioCaidaImpOcc.play();
+        btnPlayCaidaImpOcc.style.background = "#cc6f00";
+        playingCaidaImpOcc = true;
+    }
+});
+audioCaidaImpOcc.addEventListener("ended", () => {
+    btnPlayCaidaImpOcc.style.background = "#ff8c00";
+    playingCaidaImpOcc = false;
+});
+timeline.appendChild(btnPlayCaidaImpOcc);
+
+// ===================== BOTONES DE MAPAS E INFOGRAFÍAS =====================
+
+
+// --- Bajo "Fin de la Pax Romana" (índice 14, left: 2040) ---
+const btnMapaImperio2 = document.createElement("a");
+btnMapaImperio2.href = "../mapas/mapas-interactivos/edad-antigua/mapa4.html";
+btnMapaImperio2.target = "_blank";
+btnMapaImperio2.style.cssText = "position:absolute;left:2040px;top:245px;width:180px;padding:10px 14px;background:rgba(20,20,20,0.85);border:1px solid #d4af37;border-left:4px solid #d4af37;border-radius:6px;color:#f9e294;font-size:0.75rem;font-weight:bold;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;z-index:50;cursor:pointer;";
+btnMapaImperio2.innerText = "🗺️ Ver mapa interactivo del Imperio Romano";
+timeline.appendChild(btnMapaImperio2);
+
+const btnInfRoma2 = document.createElement("a");
+btnInfRoma2.href = "../../estudiar/roma/infografias/index.html";
+btnInfRoma2.target = "_blank";
+btnInfRoma2.style.cssText = "position:absolute;left:2040px;top:305px;width:180px;padding:10px 12px;background:#fff9c4;border:2px solid #b8860b;border-radius:4px;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;z-index:50;cursor:pointer;font-family:'Segoe UI',sans-serif;font-size:0.72rem;font-weight:bold;color:#2c4a7c;line-height:1.4;";
+btnInfRoma2.innerText = "Haz clic aquí para ver infografías sobre Roma Antigua";
+timeline.appendChild(btnInfRoma2);
+
+// --- Bajo "Auge maya clásico" (índice 24, left: 3390) ---
+const btnInfAmerica = document.createElement("a");
+btnInfAmerica.href = "../../estudiar/america/infografias/index.html";
+btnInfAmerica.target = "_blank";
+btnInfAmerica.style.cssText = "position:absolute;left:3390px;top:245px;width:180px;padding:10px 12px;background:#fff9c4;border:2px solid #b8860b;border-radius:4px;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;z-index:50;cursor:pointer;font-family:'Segoe UI',sans-serif;font-size:0.72rem;font-weight:bold;color:#2c4a7c;line-height:1.4;";
+btnInfAmerica.innerText = "Haz clic aquí para ver infografías sobre América Antigua";
+timeline.appendChild(btnInfAmerica);
+
+// --- Bajo "Saqueo de Roma" (índice 36, left: 5010) ---
+const btnInfRomaSaqueo = document.createElement("a");
+btnInfRomaSaqueo.href = "../../estudiar/roma/infografias/index.html";
+btnInfRomaSaqueo.target = "_blank";
+btnInfRomaSaqueo.style.cssText = "position:absolute;left:5010px;top:245px;width:180px;padding:10px 12px;background:#fff9c4;border:2px solid #b8860b;border-radius:4px;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;z-index:50;cursor:pointer;font-family:'Segoe UI',sans-serif;font-size:0.72rem;font-weight:bold;color:#2c4a7c;line-height:1.4;";
+btnInfRomaSaqueo.innerText = "Haz clic aquí para ver infografías sobre Roma Antigua";
+timeline.appendChild(btnInfRomaSaqueo);
+
+// --- Bajo "Cristianismo religión oficial" (índice 34, left: 4740) ---
+const btnMapaCristianismo = document.createElement("a");
+btnMapaCristianismo.href = "../mapas/mapas-interactivos/edad-antigua/mapa4.html";
+btnMapaCristianismo.target = "_blank";
+btnMapaCristianismo.style.cssText = "position:absolute;left:4740px;top:245px;width:180px;padding:10px 14px;background:rgba(20,20,20,0.85);border:1px solid #d4af37;border-left:4px solid #d4af37;border-radius:6px;color:#f9e294;font-size:0.75rem;font-weight:bold;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;z-index:50;cursor:pointer;";
+btnMapaCristianismo.innerText = "🗺️ Ver mapa interactivo del Imperio Romano";
+timeline.appendChild(btnMapaCristianismo);
+
+const totalWidth = startX + (eventos.length - 1) * step + 200;
+timeline.style.width = totalWidth + "px";
+timeline.style.minWidth = totalWidth + "px";
+
+const NEXT_CRONO = "cronos5.html";
+const PREV_CRONO = "cronos3.html";
+const leftBtn = document.getElementById("scrollLeft");
+const rightBtn = document.getElementById("scrollRight");
+const scrollStep = 300;
+
+leftBtn.addEventListener("click", () => {
+    if (wrapper.scrollLeft <= 10 && PREV_CRONO) {
+        window.location.href = PREV_CRONO;
+    } else {
+        wrapper.scrollLeft -= scrollStep;
+    }
+});
+rightBtn.addEventListener("click", () => {
+    const tl = document.getElementById("timeline");
+    const maxScroll = tl.scrollWidth - wrapper.getBoundingClientRect().width + 120;
+    const alFinal = wrapper.scrollLeft >= maxScroll - 20;
+    if (alFinal && NEXT_CRONO) {
+        window.location.href = NEXT_CRONO;
+    } else {
+        wrapper.scrollLeft += scrollStep;
+    }
+});
+wrapper.addEventListener("scroll", () => {
+    const alFinal = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 10;
+    rightBtn.style.background = alFinal ? "rgba(212,175,55,0.5)" : "rgba(0,0,0,0.7)";
+    rightBtn.title = alFinal ? "Ir a Cronos 5 →" : "";
+});
+
+let isDown = false, startXpos, scrollLeftPos;
+wrapper.addEventListener("mousedown", (e) => { isDown = true; startXpos = e.pageX - wrapper.offsetLeft; scrollLeftPos = wrapper.scrollLeft; });
+wrapper.addEventListener("mouseleave", () => { isDown = false; });
+wrapper.addEventListener("mouseup", () => { isDown = false; });
+wrapper.addEventListener("mousemove", (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - wrapper.offsetLeft; const walk = (x - startXpos) * 1.5; wrapper.scrollLeft = scrollLeftPos - walk; });
+let touchStartX, touchScrollLeft;
+wrapper.addEventListener("touchstart", (e) => { touchStartX = e.touches[0].pageX - wrapper.offsetLeft; touchScrollLeft = wrapper.scrollLeft; }, { passive: true });
+wrapper.addEventListener("touchmove", (e) => { const x = e.touches[0].pageX - wrapper.offsetLeft; const walk = (x - touchStartX) * 1.5; wrapper.scrollLeft = touchScrollLeft - walk; }, { passive: true });
+
+function abrirModalImagen(src) { document.getElementById("modalImagenImg").src = src; document.getElementById("modalImagen").style.display = "flex"; }
+function cerrarModalImagen() { document.getElementById("modalImagen").style.display = "none"; }
+function abrirModal(fecha, titulo, texto) { document.getElementById("modalFecha").innerText = fecha; document.getElementById("modalTitulo").innerText = titulo; document.getElementById("modalTexto").innerText = texto; document.getElementById("modal").style.display = "flex"; }
+function cerrarModal() { document.getElementById("modal").style.display = "none"; }
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") { cerrarModal(); cerrarModalImagen(); } });
+
+// ===================== CONTROL DE AUDIO ÚNICO =====================
+const todosLosAudios = [
+    { audio: audioJesusNazaret, btn: btnPlayJesusNazaret },
+    { audio: audioMuerteAugusto, btn: btnPlayMuerteAugusto },
+    { audio: audioExpCristianismo, btn: btnPlayExpCristianismo },
+    { audio: audioIncendioRoma, btn: btnPlayIncendioRoma },
+    { audio: audioTemploJerusalem, btn: btnPlayTemploJerusalem },
+    { audio: audioVesubio, btn: btnPlayVesubio },
+    { audio: audioMaxExpImperio, btn: btnPlayMaxExpImperio },
+    { audio: audioAdriano, btn: btnPlayAdriano },
+    { audio: audioTeotihuacan, btn: btnPlayTeotihuacan },
+    { audio: audioBarKojba, btn: btnPlayBarKojba },
+    { audio: audioMarcoAurelio, btn: btnPlayMarcoAurelio },
+    { audio: audioPesteAntonina, btn: btnPlayPesteAntonina },
+    { audio: audioFinPaxRomana, btn: btnPlayFinPaxRomana },
+    { audio: audioDesaMaya, btn: btnPlayDesaMaya },
+    { audio: audioEdicCaracalla, btn: btnPlayEdicCaracalla },
+    { audio: audioImpSasanida, btn: btnPlayImpSasanida },
+    { audio: audioCrisisSigloIII, btn: btnPlayCrisisSigloIII },
+    { audio: audioPersDecio, btn: btnPlayPersDecio },
+    { audio: audioFragImperial, btn: btnPlayFragImperial },
+    { audio: audioRedesTransah, btn: btnPlayRedesTransah },
+    { audio: audioDiocleciano, btn: btnPlayDiocleciano },
+    { audio: audioTetraquia, btn: btnPlayTetraquia },
+    { audio: audioAugeMaya, btn: btnPlayAugeMaya },
+    { audio: audioAscConstantino, btn: btnPlayAscConstantino },
+    { audio: audioBatPuMilvio, btn: btnPlayBatPuMilvio },
+    { audio: audioEdicMilan, btn: btnPlayEdicMilan },
+    { audio: audioFundConstpla, btn: btnPlayFundConstpla },
+    { audio: audioConNicea, btn: btnPlayConNicea },
+    { audio: audioMigrGerm, btn: btnPlayMigrGerm },
+    { audio: audioEntVisigodos, btn: btnPlayEntVisigodos },
+    { audio: audioAdrianopolis, btn: btnPlayAdrianopolis },
+    { audio: audioCristReligOfi, btn: btnPlayCristReligOfi },
+    { audio: audioDivImperio, btn: btnPlayDivImperio },
+    { audio: audioSaqueoRoma, btn: btnPlaySaqueoRoma },
+    { audio: audioVandAfric, btn: btnPlayVandAfric },
+    { audio: audioCamposCatal, btn: btnPlayCamposCatal },
+    { audio: audioSaqueoVandal, btn: btnPlaySaqueoVandal },
+    { audio: audioCaidaImpOcc, btn: btnPlayCaidaImpOcc },
+];
+function detenerTodosExcepto(audioActual) {
+    todosLosAudios.forEach(item => {
+        if (item.audio !== audioActual) {
+            item.audio.pause();
+            item.audio.currentTime = 0;
+            item.btn.style.background = "#ff8c00";
+        }
+    });
+}
+todosLosAudios.forEach(item => {
+    item.btn.addEventListener("click", () => {
+        detenerTodosExcepto(item.audio);
+    }, true);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Bloque 4 · Revoluciones e independencias</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0; padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0a0a0a;
+    color: #eee;
+    overflow: hidden;
+}
+header {
+    background: #1a1a1a;
+    border-bottom: 2px solid #d4af37;
+    padding: 15px 20px;
+    text-align: center;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+header h1 { margin: 0; color: #d4af37; font-size: 1.5rem; }
+header p  { margin: 4px 0 0; font-size: 0.82rem; color: #ccc; }
+
+.btn-volver {
+    position: fixed; top: 15px; left: 20px;
+    background: rgba(0,0,0,0.6); color: #d4af37;
+    text-decoration: none; padding: 6px 12px;
+    border-radius: 20px; font-size: 0.8rem;
+    z-index: 101; border: 1px solid #d4af37;
+}
+.btn-volver:hover { background: #d4af37; color: black; }
+
+.nav-btn {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    background: rgba(0,0,0,0.7); color: #d4af37;
+    border: 1px solid #d4af37; font-size: 2rem;
+    width: 45px; height: 80px; border-radius: 12px;
+    cursor: pointer; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
+}
+.nav-btn:hover { background: #d4af37; color: black; }
+.nav-btn.disabled { opacity: 0.2; pointer-events: none; }
+.left-btn  { left: 10px; }
+.right-btn { right: 10px; }
+
+.timeline-wrapper {
+    position: relative;
+    top: 95px;
+    width: 100%;
+    height: calc(100vh - 95px);
+    overflow-x: auto;
+    overflow-y: visible;
+    cursor: grab;
+    scrollbar-width: thin;
+    scrollbar-color: #d4af37 #1a1a1a;
+}
+.timeline-wrapper:active { cursor: grabbing; }
+.timeline-wrapper::-webkit-scrollbar { height: 6px; }
+.timeline-wrapper::-webkit-scrollbar-track { background: #1a1a1a; }
+.timeline-wrapper::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 3px; }
+
+.timeline {
+    position: relative;
+    height: 420px;
+    margin: 0 60px;
+}
+
+.linea-central {
+    position: absolute;
+    top: 40px; left: 0;
+    width: 100%; height: 4px;
+    background: linear-gradient(90deg, transparent, #d4af37 40px, #d4af37 calc(100% - 40px), transparent);
+    border-radius: 2px;
+    z-index: 1;
+}
+
+.evento {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    text-align: center;
+    cursor: pointer;
+    z-index: 2;
+}
+.punto {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+    margin: 32px auto 0;
+    transition: transform 0.2s;
+    position: relative;
+    z-index: 3;
+}
+.punto:hover { transform: scale(1.4); }
+
+.ilustracion    { background: #d4af37; }
+.revolucion     { background: #e05050; }
+.industrial     { background: #00bfff; }
+.napoleon       { background: #7b68ee; }
+.independencias { background: #66cc66; }
+
+.info {
+    position: absolute;
+    width: 145px;
+    left: 50%; transform: translateX(-50%);
+    text-align: center;
+    pointer-events: none;
+}
+.fecha  { font-size: 0.72rem; color: #d4af37; margin-bottom: 3px; }
+.titulo { font-size: 0.78rem; font-weight: bold; color: #fff; line-height: 1.2; }
+
+.conector {
+    position: absolute;
+    left: 50%; transform: translateX(-50%);
+    top: 48px;
+    width: 1px;
+    background: rgba(212,175,55,0.45);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.frame-imagen {
+    position: absolute;
+    width: 240px; height: 150px;
+    border: 2px solid #d4af37;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    transition: box-shadow 0.2s;
+    z-index: 4;
+}
+.frame-imagen:hover { box-shadow: 0 4px 25px rgba(212,175,55,0.55); }
+.frame-imagen img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    transition: transform 0.3s;
+}
+.frame-imagen:hover img { transform: scale(1.05); }
+.frame-caption {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.65);
+    color: #d4af37;
+    font-size: 0.65rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 3px 4px;
+    pointer-events: none;
+}
+
+.leyenda {
+    position: fixed; bottom: 15px; right: 15px;
+    background: rgba(0,0,0,0.78);
+    padding: 10px 14px; border-radius: 10px;
+    font-size: 0.7rem; z-index: 15;
+    backdrop-filter: blur(5px);
+    border: 1px solid #333;
+}
+.item-leyenda { display: flex; align-items: center; margin-bottom: 5px; }
+.item-leyenda:last-child { margin-bottom: 0; }
+.cor { width: 11px; height: 11px; border-radius: 50%; margin-right: 8px; flex-shrink: 0; }
+
+.modal {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none; justify-content: center; align-items: center;
+    z-index: 1000;
+}
+.modal-contenido {
+    background: #1e1e1e;
+    border-left: 5px solid #d4af37;
+    max-width: 480px; width: 90%;
+    padding: 22px; border-radius: 12px;
+    animation: fadeIn 0.2s;
+}
+.modal-contenido h2 { color: #d4af37; margin-top: 0; font-size: 1rem; }
+.modal-contenido h3 { color: #f0c060; font-size: 0.95rem; margin: 6px 0 10px; }
+.modal-contenido p  { line-height: 1.6; color: #ddd; font-size: 0.88rem; }
+.cerrar {
+    background: #d4af37; color: black;
+    border: none; padding: 8px 18px;
+    border-radius: 20px; margin-top: 14px;
+    cursor: pointer; font-weight: bold;
+}
+.cerrar:hover { background: #f0c870; }
+
+.visor-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(4px);
+    z-index: 1001;
+    display: none;
+    align-items: center; justify-content: center;
+    cursor: grab;
+}
+.visor-overlay.activo { display: flex; }
+.visor-contenedor {
+    width: 90vw; height: 88vh;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+}
+.visor-imagen {
+    max-width: 90%; max-height: 85vh;
+    object-fit: contain;
+    transition: transform 0.12s ease;
+    cursor: inherit;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+.visor-cerrar {
+    position: absolute; top: 1.2rem; right: 1.2rem;
+    background: rgba(255,255,255,0.15);
+    border: none; color: #fff;
+    width: 40px; height: 40px; border-radius: 50%;
+    font-size: 1.2rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s; z-index: 1002;
+}
+.visor-cerrar:hover { background: rgba(255,255,255,0.3); }
+.visor-caption {
+    position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.65); color: #d4af37;
+    padding: 0.35rem 1rem; border-radius: 20px;
+    font-size: 0.75rem; font-weight: 600;
+    pointer-events: none; white-space: nowrap;
+}
+.visor-info {
+    position: absolute; bottom: 3rem; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.55); color: #fff;
+    padding: 0.3rem 0.8rem; border-radius: 20px;
+    font-size: 0.7rem; pointer-events: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1); }
+}
+@media (max-width: 700px) {
+    .nav-btn { width: 35px; height: 60px; font-size: 1.4rem; }
+    .frame-imagen { width: 180px; height: 113px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>BLOQUE 4 · REVOLUCIONES E INDEPENDENCIAS</h1>
+  <p>1751 — 1826 · Deslizá horizontalmente o usá los botones laterales · Tocá los puntos para más información</p>
+</header>
+
+<a href="index.html" class="btn-volver">← Línea de tiempo</a>
+<a href="../../index.html" style="position:fixed;top:15px;right:20px;background:rgba(0,0,0,0.6);color:#d4af37;text-decoration:none;padding:6px 12px;border-radius:20px;font-size:0.8rem;z-index:101;border:1px solid #d4af37;display:inline-flex;align-items:center;gap:6px;">🏠 Ir a página principal</a>
+<div class="nav-btn left-btn" id="scrollLeft">❮</div>
+<div class="nav-btn right-btn disabled" id="scrollRight">❯</div>
+
+<div class="timeline-wrapper" id="timelineWrapper">
+  <div class="timeline" id="timeline">
+    <div class="linea-central"></div>
+  </div>
+</div>
+
+<div class="leyenda">
+  <div class="item-leyenda"><div class="cor" style="background:#d4af37"></div>Ilustración y reformas</div>
+  <div class="item-leyenda"><div class="cor" style="background:#e05050"></div>Revoluciones atlánticas</div>
+  <div class="item-leyenda"><div class="cor" style="background:#00bfff"></div>Revolución Industrial</div>
+  <div class="item-leyenda"><div class="cor" style="background:#7b68ee"></div>Era napoleónica</div>
+  <div class="item-leyenda"><div class="cor" style="background:#66cc66"></div>Independencias americanas</div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-contenido">
+    <h2 id="modalFecha"></h2>
+    <h3 id="modalTitulo"></h3>
+    <p  id="modalTexto"></p>
+    <button class="cerrar" onclick="cerrarModal()">Cerrar</button>
+  </div>
+</div>
+
+<div class="visor-overlay" id="visorOverlay">
+  <div class="visor-contenedor">
+    <img id="visorImg" class="visor-imagen" draggable="false" alt="">
+  </div>
+  <button class="visor-cerrar" id="visorCerrar">✕</button>
+  <div class="visor-caption" id="visorCaption"></div>
+  <div class="visor-info"    id="visorInfo">Escala: 100%</div>
+</div>
+
+<script>
+const EVENTOS = [
+  // índice 0
+  { fecha:"1759–1788", titulo:"Carlos III y las Reformas Borbónicas", tipo:"ilustracion",
+    texto:"El reinado de Carlos III representó el punto más alto del despotismo ilustrado español. Sus ministros impulsaron reformas administrativas, económicas y militares en América: crearon nuevos virreinatos, expulsaron a los jesuitas, aumentaron impuestos y limitaron la autonomía criolla, sembrando involuntariamente el descontento que derivaría en las guerras de independencia." },
+  // índice 1
+  { fecha:"1762", titulo:"Rousseau: El contrato social", tipo:"ilustracion",
+    texto:"Jean-Jacques Rousseau publica Du contrat social, obra en la que sostiene que la soberanía reside en el pueblo y que el gobierno legítimo surge de un contrato entre los ciudadanos. Sus ideas sobre la voluntad general y la soberanía popular se convirtieron en el fundamento ideológico de la Revolución Francesa y las independencias americanas.",
+    imagen:"imagenes/i17.png", imagenCaption:"Rousseau: El contrato social (1762)" },
+  // índice 2
+  { fecha:"1767", titulo:"Expulsión de los jesuitas", tipo:"ilustracion",
+    texto:"Carlos III expulsa a la Compañía de Jesús de todos los dominios españoles, y ese mismo año el marqués de Pombal hace lo propio en los dominios portugueses. Se confiscaron sus bienes y se cerraron sus misiones. La medida buscaba subordinar la Iglesia al Estado y eliminar un poder económico e intelectual considerado un 'Estado dentro del Estado'." },
+  // índice 3
+  { fecha:"1769", titulo:"Watt perfecciona la máquina de vapor", tipo:"industrial",
+    texto:"James Watt obtiene la patente de su máquina de vapor de doble efecto, que multiplicó exponencialmente la capacidad productiva de las fábricas y minas inglesas. Este invento es el símbolo de la Primera Revolución Industrial: transformó la energía, el transporte, la organización del trabajo y la estructura social de todo el mundo occidental.",
+    imagen:"imagenes/i18.png", imagenCaption:"Watt y la máquina de vapor (1769)" },
+  // índice 4
+  { fecha:"1776", titulo:"Independencia de EE.UU. · Adam Smith", tipo:"revolucion",
+    texto:"Las Trece Colonias declaran su independencia de Gran Bretaña, fundando la primera república moderna basada en una constitución escrita y la soberanía popular. Ese mismo año, Adam Smith publica La riqueza de las naciones, sentando las bases del liberalismo económico y cuestionando el mercantilismo que dominó los siglos anteriores." },
+  // índice 5
+  { fecha:"1778", titulo:"Libre Comercio · Virreinato del Río de la Plata", tipo:"ilustracion",
+    texto:"El Reglamento de Libre Comercio de 1778 habilitó nuevos puertos americanos para dinamizar el intercambio, aunque mantuvo el monopolio a favor de la metrópoli. Ese mismo año se había creado el Virreinato del Río de la Plata (1776), con capital en Buenos Aires, para asegurar la salida de la plata de Potosí y frenar el contrabando y el avance portugués.",
+    imagen:"imagenes/i19.png", imagenCaption:"Virreinato del Río de la Plata (1776–1778)" },
+  // índice 6
+  { fecha:"1780–1781", titulo:"Rebelión de Túpac Amaru II", tipo:"revolucion",
+    texto:"José Gabriel Condorcanqui, conocido como Túpac Amaru II, lideró la mayor rebelión indígena del período colonial en el Perú. Exigió la abolición de la mita y los tributos. Fue capturado y ejecutado junto a su familia en el Cuzco en 1781. La rebelión aterrorizó a las élites coloniales y aceleró algunas reformas, pero también endureció la represión." },
+  // índice 7
+  { fecha:"1789", titulo:"Revolución Francesa", tipo:"revolucion",
+    texto:"La toma de la Bastilla el 14 de julio de 1789 inició la revolución más influyente de la historia moderna. La Asamblea Nacional abolió el feudalismo y aprobó la Declaración de los Derechos del Hombre y del Ciudadano. La Revolución destruyó el Antiguo Régimen, transformó a súbditos en ciudadanos y proveyó el lenguaje ideológico de todas las independencias americanas." },
+  // índice 8
+  { fecha:"1791–1804", titulo:"Revolución haitiana", tipo:"revolucion",
+    texto:"La única revolución de esclavos exitosa de la historia moderna. Liderada por Toussaint Louverture y luego Jean-Jacques Dessalines, los esclavos de Saint-Domingue derrotaron a los ejércitos francés, español e inglés. En 1804, Haití se convirtió en la primera república negra del mundo, demostrando que los principios de libertad e igualdad de 1789 podían aplicarse universalmente.",
+    imagen:"imagenes/i20.png", imagenCaption:"Revolución haitiana (1791–1804)" },
+  // índice 9
+  { fecha:"1793", titulo:"Ejecución de Luis XVI", tipo:"revolucion",
+    texto:"El rey Luis XVI es guillotinado en la Plaza de la Revolución de París. Su ejecución marcó el punto de no retorno de la Revolución Francesa: ya no se trataba de reformar la monarquía sino de abolirla. El hecho conmocionó a las monarquías europeas, que formaron coaliciones para combatir a la Francia revolucionaria y luego napoleónica." },
+  // índice 10
+  { fecha:"1776–1800", titulo:"Primera Revolución Industrial", tipo:"industrial",
+    texto:"Inglaterra fue la cuna de la Revolución Industrial gracias a su abundancia de carbón, su sistema financiero desarrollado y su flota mercante. La mecanización textil (Spinning Jenny, telar mecánico), la máquina de vapor y el surgimiento de las fábricas transformaron radicalmente el trabajo, la sociedad y el medio ambiente, polarizando la sociedad entre burguesía y proletariado." },
+  // índice 11
+  { fecha:"1799", titulo:"Ascenso de Napoleón Bonaparte", tipo:"napoleon",
+    texto:"El golpe de Estado del 18 Brumario puso fin al Directorio y llevó a Napoleón Bonaparte al poder como Primer Cónsul. Napoleón consolidó los logros civiles de la Revolución (Código Civil, educación laica, igualdad ante la ley) mientras restauraba el autoritarismo político. Su figura encarnó la paradoja de la Modernidad: libertad y conquista al mismo tiempo.",
+    imagen:"imagenes/i21.png", imagenCaption:"Ascenso de Napoleón (1799)" },
+  // índice 12
+  { fecha:"1804", titulo:"Napoleón se proclama emperador", tipo:"napoleon",
+    texto:"En una ceremonia en Notre-Dame de París, Napoleón toma la corona de manos del papa Pío VII y se la coloca él mismo, simbolizando que su poder no derivaba de Dios sino de sí mismo y del pueblo. El gesto resumió la tensión entre la herencia revolucionaria y el nuevo absolutismo ilustrado que caracterizó a su régimen." },
+  // índice 13
+  { fecha:"1808", titulo:"Napoleón invade España", tipo:"napoleon",
+    texto:"Las tropas napoleónicas invaden España y obligan a abdicar a los Borbones. José Bonaparte es impuesto como rey. En América, la crisis de legitimidad de la metrópoli fue el detonante directo de los movimientos independentistas: los criollos formaron juntas de gobierno en nombre del rey cautivo Fernando VII, pero rápidamente transformaron ese reclamo de autonomía en independencia." },
+  // índice 14
+  { fecha:"1810", titulo:"Revolución de Mayo en el Río de la Plata", tipo:"independencias",
+    texto:"El 25 de mayo de 1810, la Primera Junta de Gobierno reemplaza al virrey Baltasar Hidalgo de Cisneros en Buenos Aires. Aunque inicialmente se gobernó en nombre del rey Fernando VII, la Revolución de Mayo inició el proceso que llevaría a la declaración de independencia en 1816 y al surgimiento de las Provincias Unidas del Río de la Plata.",
+    imagen:"imagenes/i22.png", imagenCaption:"Revolución de Mayo (1810)" },
+  // índice 15
+  { fecha:"1814", titulo:"Stephenson: la locomotora a vapor", tipo:"industrial",
+    texto:"George Stephenson pone en funcionamiento la primera locomotora a vapor práctica, la Blücher, en las minas de carbón de Killingworth. En 1825 inaugurará el primer ferrocarril público del mundo. La locomotora transformó radicalmente el transporte, conectó mercados nacionales e internacionales y aceleró la industrialización en todo el mundo occidental." },
+  // índice 16
+  { fecha:"1815", titulo:"Congreso de Viena · Derrota de Napoleón", tipo:"napoleon",
+    texto:"Tras la derrota de Napoleón en Waterloo, las potencias europeas se reúnen en Viena para rediseñar el mapa del continente y restaurar el orden monárquico. El Congreso estableció el principio de legitimidad dinástica y el equilibrio entre potencias, frenando temporalmente las ideas liberales y nacionalistas que la Revolución Francesa había desatado.",
+    imagen:"imagenes/i23.png", imagenCaption:"Congreso de Viena (1815)" },
+  // índice 17
+  { fecha:"1816", titulo:"Independencia del Río de la Plata", tipo:"independencias",
+    texto:"El Congreso de Tucumán declara la independencia de las Provincias Unidas en Sud América el 9 de julio de 1816. La declaración fue impulsada por José de San Martín, quien ya planeaba el cruce de los Andes para liberar Chile y Perú. El nuevo Estado enfrentaría décadas de guerras civiles antes de consolidarse como República Argentina." },
+  // índice 18
+  { fecha:"1817", titulo:"San Martín cruza los Andes", tipo:"independencias",
+    texto:"El general José de San Martín lidera el cruce del ejército patriota por los Andes en pleno invierno, en una de las operaciones militares más audaces de la historia americana. La victoria en Chacabuco (1817) y Maipú (1818) liberó Chile, abriendo el camino para la expedición libertadora al Perú que completaría la independencia sudamericana." },
+  // índice 19
+  { fecha:"1821", titulo:"Independencia de México, Venezuela y Perú", tipo:"independencias",
+    texto:"Un año clave en las independencias americanas: México logra su independencia bajo Agustín de Iturbide tras once años de guerra; Simón Bolívar proclama la Gran Colombia; y San Martín declara la independencia del Perú en Lima. El dominio español en América continental se desmorona aceleradamente." },
+  // índice 20
+  { fecha:"1822", titulo:"Independencia de Brasil", tipo:"independencias",
+    texto:"El príncipe Pedro I declara la independencia de Brasil el 7 de septiembre con el grito de Ipiranga. A diferencia de las independencias hispanoamericanas, fue un proceso relativamente pacífico y conservador: la corte portuguesa se había instalado en Río de Janeiro desde 1808, y la monarquía se mantuvo hasta 1889. Brasil fue el único país americano que se independizó como Imperio." },
+  // índice 21
+  { fecha:"1824", titulo:"Batalla de Ayacucho", tipo:"independencias",
+    texto:"El 9 de diciembre de 1824, el general Antonio José de Sucre derrota al ejército realista en la batalla de Ayacucho, en los Andes peruanos. Fue la última gran batalla de las guerras de independencia hispanoamericanas. Con ella se puso fin a más de tres siglos de dominio colonial español en América del Sur.",
+    imagen:"imagenes/i24.png", imagenCaption:"Batalla de Ayacucho (1824)" },
+  // índice 22
+  { fecha:"1826", titulo:"Últimos focos realistas derrotados", tipo:"independencias",
+    texto:"La rendición del Callao en enero de 1826 eliminó el último reducto realista en América del Sur. Para ese año, dieciocho nuevas repúblicas habían surgido en el continente. Sin embargo, el fin del dominio colonial no significó una revolución social: las élites criollas reemplazaron a los peninsulares manteniendo las desigualdades estructurales heredadas de la Colonia." },
+];
+
+const timeline = document.getElementById("timeline");
+const wrapper  = document.getElementById("timelineWrapper");
+
+const startX = 160;
+const step   = 155;
+const offsetLevels = [55, 120, 80, 145];
+const IMG_TOP = 210;
+
+EVENTOS.forEach((ev, idx) => {
+  const left = startX + idx * step;
+
+  const div = document.createElement("div");
+  div.className = "evento";
+  div.style.left = left + "px";
+
+  const punto = document.createElement("div");
+  punto.className = `punto ${ev.tipo}`;
+  div.appendChild(punto);
+
+  const offsetY = offsetLevels[idx % offsetLevels.length];
+  const info = document.createElement("div");
+  info.className = "info";
+  info.style.top = (offsetY + 18) + "px";
+  info.innerHTML = `<div class="fecha">${ev.fecha}</div><div class="titulo">${ev.titulo}</div>`;
+  div.appendChild(info);
+
+  const conector = document.createElement("div");
+  conector.className = "conector";
+  conector.style.height = (offsetY - 2) + "px";
+  conector.style.background = "rgba(212,175,55,0.45)";
+  div.appendChild(conector);
+
+  div.addEventListener("click", () => abrirModal(ev.fecha, ev.titulo, ev.texto));
+  timeline.appendChild(div);
+
+  if (ev.imagen) {
+    const frame = document.createElement("div");
+    frame.className = "frame-imagen";
+    frame.style.left = (left - 120) + "px";
+    frame.style.top  = IMG_TOP + "px";
+
+    const img = document.createElement("img");
+    img.src = ev.imagen;
+    img.alt = ev.imagenCaption;
+    img.onerror = () => { frame.style.display = "none"; };
+    frame.appendChild(img);
+
+    const cap = document.createElement("div");
+    cap.className = "frame-caption";
+    cap.textContent = ev.imagenCaption;
+    frame.appendChild(cap);
+
+    frame.addEventListener("click", () => abrirVisor(ev.imagen, ev.imagenCaption));
+    timeline.appendChild(frame);
+  }
+});
+
+// ── LUPAS CRONOS4 ──
+
+const lupaCarlos3 = document.createElement("a");
+lupaCarlos3.href = "https://www.youtube.com/watch?v=4Uf3WJqzEls";
+lupaCarlos3.target = "_blank";
+lupaCarlos3.style.cssText = "position:absolute;left:130px;top:123px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaCarlos3.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">Las Reformas<br>Borbónicas</div>`;
+timeline.appendChild(lupaCarlos3);
+
+const lupaJesuitas = document.createElement("a");
+lupaJesuitas.href = "https://www.youtube.com/watch?v=wKD3IuYkrI8";
+lupaJesuitas.target = "_blank";
+lupaJesuitas.style.cssText = "position:absolute;left:436px;top:148px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaJesuitas.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">Expulsión de<br>los jesuitas</div>`;
+timeline.appendChild(lupaJesuitas);
+
+const lupaWatt = document.createElement("a");
+lupaWatt.href = "https://www.youtube.com/watch?v=1-ndnoFV6wo";
+lupaWatt.target = "_blank";
+lupaWatt.style.cssText = "position:absolute;left:585px;top:380px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaWatt.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">La máquina<br>de vapor</div>`;
+timeline.appendChild(lupaWatt);
+
+const lupaEEUU = document.createElement("a");
+lupaEEUU.href = "https://www.youtube.com/watch?v=8Zjpl220XbY";
+lupaEEUU.target = "_blank";
+lupaEEUU.style.cssText = "position:absolute;left:735px;top:123px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaEEUU.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">La revolución<br>norteamericana</div>`;
+timeline.appendChild(lupaEEUU);
+
+const lupaVirreinato = document.createElement("a");
+lupaVirreinato.href = "https://www.youtube.com/watch?v=EKJ0EiETPw0";
+lupaVirreinato.target = "_blank";
+lupaVirreinato.style.cssText = "position:absolute;left:900px;top:380px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaVirreinato.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">Creación del<br>Virreinato</div>`;
+timeline.appendChild(lupaVirreinato);
+
+const lupaTupac = document.createElement("a");
+lupaTupac.href = "https://www.youtube.com/watch?v=Z6j9i4Bey_Q";
+lupaTupac.target = "_blank";
+lupaTupac.style.cssText = "position:absolute;left:1050px;top:148px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaTupac.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">Rebelión de<br>Túpac Amaru II</div>`;
+timeline.appendChild(lupaTupac);
+
+const lupaRevFrancesa = document.createElement("a");
+lupaRevFrancesa.href = "https://www.youtube.com/watch?v=AYD609Lfn_I";
+lupaRevFrancesa.target = "_blank";
+lupaRevFrancesa.style.cssText = "position:absolute;left:1199px;top:203px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaRevFrancesa.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">La revolución<br>francesa</div>`;
+timeline.appendChild(lupaRevFrancesa);
+
+const lupaHaiti = document.createElement("a");
+lupaHaiti.href = "https://www.youtube.com/watch?v=oLfJlfskdMg";
+lupaHaiti.target = "_blank";
+lupaHaiti.style.cssText = "position:absolute;left:1355px;top:380px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaHaiti.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">La revolución<br>haitiana</div>`;
+timeline.appendChild(lupaHaiti);
+
+const lupaRevInd = document.createElement("a");
+lupaRevInd.href = "https://www.youtube.com/watch?v=TT2uRy4MdM0";
+lupaRevInd.target = "_blank";
+lupaRevInd.style.cssText = "position:absolute;left:1678px;top:158px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaRevInd.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">Revolución<br>industrial</div>`;
+timeline.appendChild(lupaRevInd);
+
+const lupaNapoleon = document.createElement("a");
+lupaNapoleon.href = "https://www.youtube.com/watch?v=1awPFAvanOM";
+lupaNapoleon.target = "_blank";
+lupaNapoleon.style.cssText = "position:absolute;left:1825px;top:380px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaNapoleon.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">Napoleón<br>Bonaparte</div>`;
+timeline.appendChild(lupaNapoleon);
+
+const lupaNapoleonEsp = document.createElement("a");
+lupaNapoleonEsp.href = "https://www.youtube.com/watch?v=wIYvpxQm9cg";
+lupaNapoleonEsp.target = "_blank";
+lupaNapoleonEsp.style.cssText = "position:absolute;left:2128px;top:178px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaNapoleonEsp.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">Las guerras<br>napoleónicas</div>`;
+timeline.appendChild(lupaNapoleonEsp);
+
+const lupaMayo = document.createElement("a");
+lupaMayo.href = "https://www.youtube.com/watch?v=2ocbZ0Ar1V0";
+lupaMayo.target = "_blank";
+lupaMayo.style.cssText = "position:absolute;left:2290px;top:380px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaMayo.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">La revolución<br>de Mayo</div>`;
+timeline.appendChild(lupaMayo);
+
+const lupaStephenson = document.createElement("a");
+lupaStephenson.href = "https://www.youtube.com/watch?v=BpF4z3nOvIk";
+lupaStephenson.target = "_blank";
+lupaStephenson.style.cssText = "position:absolute;left:2452px;top:220px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaStephenson.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">Ferrocarril<br>en la historia</div>`;
+timeline.appendChild(lupaStephenson);
+
+const lupaViena = document.createElement("a");
+lupaViena.href = "https://www.youtube.com/watch?v=JbTpL4lLjGI";
+lupaViena.target = "_blank";
+lupaViena.style.cssText = "position:absolute;left:2580px;top:380px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaViena.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">El Congreso<br>de Viena</div>`;
+timeline.appendChild(lupaViena);
+
+const lupaCruce = document.createElement("a");
+lupaCruce.href = "https://www.youtube.com/watch?v=UJO8g_mKL6c&t=171s";
+lupaCruce.target = "_blank";
+lupaCruce.style.cssText = "position:absolute;left:2905px;top:158px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaCruce.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">San Martín y el<br>cruce de los Andes</div>`;
+timeline.appendChild(lupaCruce);
+
+const lupaSanMartin = document.createElement("a");
+lupaSanMartin.href = "https://www.youtube.com/watch?v=63SS_OFGkc4";
+lupaSanMartin.target = "_blank";
+lupaSanMartin.style.cssText = "position:absolute;left:2900px;top:320px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaSanMartin.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">La independencia<br>(1816)</div>`;
+timeline.appendChild(lupaSanMartin);
+
+const lupaBrasil = document.createElement("a");
+lupaBrasil.href = "https://www.youtube.com/watch?v=WCfXkKHxM64";
+lupaBrasil.target = "_blank";
+lupaBrasil.style.cssText = "position:absolute;left:3222px;top:118px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaBrasil.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">Independencia<br>de Brasil</div>`;
+timeline.appendChild(lupaBrasil);
+
+const lupaAyacucho = document.createElement("a");
+lupaAyacucho.href = "https://www.youtube.com/watch?v=sNPI2tExuDk";
+lupaAyacucho.target = "_blank";
+lupaAyacucho.style.cssText = "position:absolute;left:3355px;top:380px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaAyacucho.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">Después de las<br>independencias</div>`;
+timeline.appendChild(lupaAyacucho);
+
+const lupaFocos = document.createElement("a");
+lupaFocos.href = "https://www.youtube.com/watch?v=TZxaxkIi-80";
+lupaFocos.target = "_blank";
+lupaFocos.style.cssText = "position:absolute;left:3525px;top:148px;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;z-index:5;";
+lupaFocos.innerHTML = `<img src="../lca.ico" style="width:28px;height:28px;" title="Ver video"><div style="font-size:0.65rem;font-weight:700;color:#7fff00;text-align:center;line-height:1.3;max-width:90px;">La independencia<br>del Perú</div>`;
+timeline.appendChild(lupaFocos);
+
+const totalWidth = startX + (EVENTOS.length - 1) * step + 220;
+timeline.style.width    = totalWidth + "px";
+timeline.style.minWidth = totalWidth + "px";
+
+function abrirModal(fecha, titulo, texto) {
+  document.getElementById("modalFecha").innerText  = fecha;
+  document.getElementById("modalTitulo").innerText = titulo;
+  document.getElementById("modalTexto").innerText  = texto;
+  document.getElementById("modal").style.display   = "flex";
+}
+function cerrarModal() {
+  document.getElementById("modal").style.display = "none";
+}
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") { cerrarModal(); cerrarVisor(); }
+});
+
+const visorOverlay = document.getElementById("visorOverlay");
+const visorImg     = document.getElementById("visorImg");
+const visorCaption = document.getElementById("visorCaption");
+const visorInfoEl  = document.getElementById("visorInfo");
+const visorCerrar  = document.getElementById("visorCerrar");
+
+let vScale = 1, vTx = 0, vTy = 0;
+let vDragging = false, vStartX, vStartY, vStartTx, vStartTy;
+let vTouchDist = 0, vTouchScaleStart = 1;
+
+function abrirVisor(src, caption) {
+  vScale = 1; vTx = 0; vTy = 0;
+  visorImg.src = src;
+  visorImg.alt = caption;
+  visorCaption.textContent = caption;
+  visorOverlay.classList.add("activo");
+  document.body.style.overflow = "hidden";
+  actualizarVisor();
+}
+function cerrarVisor() {
+  visorOverlay.classList.remove("activo");
+  document.body.style.overflow = "";
+}
+function actualizarVisor() {
+  visorImg.style.transform = `translate(${vTx}px,${vTy}px) scale(${vScale})`;
+  visorInfoEl.textContent  = `Escala: ${Math.round(vScale * 100)}%`;
+}
+
+visorImg.addEventListener("wheel", e => {
+  e.preventDefault();
+  vScale = Math.min(Math.max(vScale + (e.deltaY > 0 ? -0.1 : 0.1), 0.4), 6);
+  actualizarVisor();
+}, { passive: false });
+
+visorImg.addEventListener("mousedown", e => {
+  vDragging = true;
+  vStartX = e.clientX; vStartY = e.clientY;
+  vStartTx = vTx; vStartTy = vTy;
+  visorImg.style.cursor = "grabbing";
+});
+window.addEventListener("mousemove", e => {
+  if (!vDragging) return;
+  vTx = vStartTx + (e.clientX - vStartX);
+  vTy = vStartTy + (e.clientY - vStartY);
+  actualizarVisor();
+});
+window.addEventListener("mouseup", () => {
+  vDragging = false;
+  visorImg.style.cursor = "grab";
+});
+
+visorImg.addEventListener("touchstart", e => {
+  if (e.touches.length === 1) {
+    vDragging = true;
+    vStartX = e.touches[0].clientX; vStartY = e.touches[0].clientY;
+    vStartTx = vTx; vStartTy = vTy;
+  } else if (e.touches.length === 2) {
+    vDragging = false;
+    vTouchDist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    vTouchScaleStart = vScale;
+  }
+}, { passive: false });
+
+visorImg.addEventListener("touchmove", e => {
+  e.preventDefault();
+  if (e.touches.length === 1 && vDragging) {
+    vTx = vStartTx + (e.touches[0].clientX - vStartX);
+    vTy = vStartTy + (e.touches[0].clientY - vStartY);
+    actualizarVisor();
+  } else if (e.touches.length === 2) {
+    const nd = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    vScale = Math.min(Math.max(vTouchScaleStart * (nd / vTouchDist), 0.4), 6);
+    actualizarVisor();
+  }
+}, { passive: false });
+
+visorImg.addEventListener("touchend", () => { vDragging = false; });
+visorCerrar.addEventListener("click", cerrarVisor);
+visorCerrar.addEventListener("mousedown", e => e.stopPropagation());
+visorOverlay.addEventListener("click", e => { if (e.target === visorOverlay) cerrarVisor(); });
+visorImg.addEventListener("dragstart", e => e.preventDefault());
+
+const leftBtn  = document.getElementById("scrollLeft");
+const rightBtn = document.getElementById("scrollRight");
+const SCROLL_STEP = 320;
+const PREV_CRONO  = "cronos3.html";
+
+leftBtn.addEventListener("click", () => {
+  const atStart = wrapper.scrollLeft <= 20;
+  if (atStart) {
+    window.location.href = PREV_CRONO;
+  } else {
+    wrapper.scrollLeft -= SCROLL_STEP;
+  }
+});
+
+// El botón derecho solo scrollea — cronos4 es el último bloque
+rightBtn.addEventListener("click", () => {
+  wrapper.scrollLeft += SCROLL_STEP;
+});
+
+wrapper.addEventListener("scroll", () => {
+  const atStart = wrapper.scrollLeft <= 20;
+  leftBtn.style.background  = atStart ? "rgba(212,175,55,0.5)" : "rgba(0,0,0,0.7)";
+  leftBtn.title  = atStart ? "← Ir al Bloque 3" : "";
+});
+
+let isDown = false, startXPos, scrollLeftPos;
+wrapper.addEventListener("mousedown", e => {
+  isDown = true;
+  startXPos     = e.pageX - wrapper.offsetLeft;
+  scrollLeftPos = wrapper.scrollLeft;
+});
+wrapper.addEventListener("mouseleave", () => { isDown = false; });
+wrapper.addEventListener("mouseup",    () => { isDown = false; });
+wrapper.addEventListener("mousemove", e => {
+  if (!isDown) return;
+  e.preventDefault();
+  wrapper.scrollLeft = scrollLeftPos - (e.pageX - wrapper.offsetLeft - startXPos) * 1.5;
+});
+
+let tStartX, tScrollLeft;
+wrapper.addEventListener("touchstart", e => {
+  tStartX     = e.touches[0].pageX - wrapper.offsetLeft;
+  tScrollLeft = wrapper.scrollLeft;
+}, { passive: true });
+wrapper.addEventListener("touchmove", e => {
+  wrapper.scrollLeft = tScrollLeft - (e.touches[0].pageX - wrapper.offsetLeft - tStartX) * 1.5;
+}, { passive: true });
+</script>
+</body>
+</html>

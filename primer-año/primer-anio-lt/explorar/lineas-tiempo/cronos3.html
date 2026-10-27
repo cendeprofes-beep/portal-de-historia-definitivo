@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRONO3 - De la Edad del Hierro a la consolidación de Roma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&display=swap" rel="stylesheet">
+<style>
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0a0a0a;
+    color: #eee;
+    overflow: hidden;
+}
+/* Cabecera */
+header {
+    background: #1a1a1a;
+    border-bottom: 2px solid #d4af37;
+    padding: 15px 20px;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+header h1 {
+    margin: 0;
+    color: #d4af37;
+    font-size: 1.6rem;
+}
+header p {
+    margin: 5px 0 0;
+    font-size: 0.85rem;
+    color: #ccc;
+}
+/* Botón Volver (opcional) */
+.btn-volver {
+    position: fixed;
+    top: 15px;
+    left: 20px;
+    background: rgba(0,0,0,0.6);
+    color: #d4af37;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    z-index: 101;
+    border: 1px solid #d4af37;
+}
+.btn-volver:hover {
+    background: #d4af37;
+    color: black;
+}
+.btn-inicio {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    background: rgba(0,0,0,0.6);
+    color: #d4af37;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    z-index: 101;
+    border: 1px solid #d4af37;
+}
+.btn-inicio:hover {
+    background: #d4af37;
+    color: black;
+}
+/* Contenedor del timeline con scroll horizontal */
+.timeline-wrapper {
+    position: relative;
+    top: 100px; /* debajo del header */
+    width: 100%;
+    height: calc(100vh - 100px);
+    overflow-x: auto;
+    overflow-y: hidden;
+    cursor: grab;
+}
+.timeline-wrapper:active {
+    cursor: grabbing;
+}
+.timeline {
+    position: relative;
+    min-width: max-content; /* el ancho real lo calcula JS */
+    height: 630px;     /* altura para acomodar leyendas escalonadas, etiquetas de período y marcos de imagen */
+    margin: 0 60px;    /* espacio para los botones laterales */
+}
+/* Línea horizontal (ahora arriba, no en el centro) */
+.linea-central {
+    position: absolute;
+    top: 40px;         /* línea fija arriba */
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: #d4af37;
+    border-radius: 2px;
+    z-index: 1;
+}
+/* Cada evento (punto + info) */
+.evento {
+    position: absolute;
+    top: 40px;          /* alineado con la línea */
+    transform: translateX(-50%);
+    text-align: center;
+    cursor: pointer;
+    z-index: 2;
+}
+/* Punto */
+.punto {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+    margin: 0 auto;
+    transition: transform 0.2s;
+}
+.punto:hover {
+    transform: scale(1.3);
+}
+/* Colores de los puntos según período */
+.hierro    { background: #9E9E9E; }
+.arcaico   { background: #4169E1; }
+.clasico   { background: #00CED1; }
+.helenistico { background: #DC143C; }
+/* Contenedor de fecha y título (leyenda) */
+.info {
+    position: absolute;
+    width: 140px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    pointer-events: none;
+}
+.fecha {
+    font-size: 0.75rem;
+    color: #ddd;
+    margin-bottom: 3px;
+}
+.titulo {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #fff;
+    line-height: 1.2;
+}
+/* Leyendas escalonadas: la posición vertical se asigna dinámicamente con JS */
+/* Modal */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-contenido {
+    background: #1e1e1e;
+    border-left: 5px solid #d4af37;
+    max-width: 500px;
+    width: 90%;
+    padding: 20px;
+    border-radius: 12px;
+    animation: fadeIn 0.2s;
+}
+.modal-contenido h2 {
+    color: #d4af37;
+    margin-top: 0;
+}
+.modal-contenido h3 {
+    color: #00BFFF;
+}
+.modal-contenido p {
+    line-height: 1.5;
+    color: #ddd;
+}
+.cerrar {
+    background: #d4af37;
+    color: black;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    margin-top: 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95);}
+    to { opacity: 1; transform: scale(1);}
+}
+/* Botones de navegación */
+.nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.7);
+    color: #d4af37;
+    border: 1px solid #d4af37;
+    font-size: 2rem;
+    width: 45px;
+    height: 80px;
+    border-radius: 12px;
+    cursor: pointer;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+.nav-btn:hover {
+    background: #d4af37;
+    color: black;
+}
+.left-btn {
+    left: 10px;
+}
+.right-btn {
+    right: 10px;
+}
+/* Leyenda de colores (igual, pero la mantenemos) */
+.leyenda {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    background: rgba(0,0,0,0.75);
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    z-index: 15;
+    backdrop-filter: blur(5px);
+}
+.item-leyenda {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.cor {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+/* Marco de imagen de período */
+.frame-imagen {
+    position: absolute;
+    width: 307px;   /* 3.2 pulgadas a 96dpi */
+    height: 192px;  /* 2 pulgadas a 96dpi */
+    border: 2px solid #d4af37;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    transition: box-shadow 0.2s;
+}
+.frame-imagen:hover {
+    box-shadow: 0 4px 25px rgba(212,175,55,0.5);
+}
+.frame-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s;
+}
+.frame-imagen:hover img {
+    transform: scale(1.05);
+}
+/* Lightbox de imagen completa */
+#modalImagen {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    cursor: zoom-out;
+}
+#modalImagen img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+    display: block;
+    animation: fadeIn 0.2s;
+}
+@keyframes latido {
+    0%   { transform: scale(1); }
+    30%  { transform: scale(1.18); }
+    60%  { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+.ico-latido {
+    animation: latido 1.4s infinite ease-in-out;
+    display: block;
+}
+.ico-titulo {
+    font-family: 'Libre Baskerville', 'Baskerville Old Face', Baskerville, serif;
+    color: #bfff00;
+    font-size: 0.72rem;
+    font-weight: bold;
+    white-space: normal;
+    line-height: 1.4;
+    pointer-events: none;
+    text-shadow: 0 0 4px rgba(191,255,0,0.5);
+}
+@media (max-width: 700px) {
+    .nav-btn { width: 35px; height: 60px; font-size: 1.5rem; }
+    .evento { top: 35px; }
+    .linea-central { top: 35px; }
+    .timeline { height: 420px; }
+}
+</style>
+</head>
+<body>
+<header>
+    <h1>DE LA EDAD DEL HIERRO A LA CONSOLIDACIÓN DE ROMA</h1>
+    <p>Desliza horizontalmente o usa los botones laterales. Toca los puntos para más información.</p>
+</header>
+<a href="index.html" class="btn-volver">← Líneas de tiempo</a>
+<a href="../../../../index.html" class="btn-inicio">🏠 Inicio</a>
+
+<div class="nav-btn left-btn" id="scrollLeft">❮</div>
+<div class="nav-btn right-btn" id="scrollRight">❯</div>
+
+<div class="timeline-wrapper" id="timelineWrapper">
+    <div class="timeline" id="timeline">
+        
+    </div>
+</div>
+
+<div class="leyenda">
+    <div class="item-leyenda"><div class="cor hierro"></div>Edad del Hierro</div>
+    <div class="item-leyenda"><div class="cor arcaico"></div>Grecia Arcaica y Oriente</div>
+    <div class="item-leyenda"><div class="cor clasico"></div>Grecia Clásica</div>
+    <div class="item-leyenda"><div class="cor helenistico"></div>Helenismo y Roma</div>
+</div>
+
+<div class="modal" id="modal">
+    <div class="modal-contenido">
+        <h2 id="modalFecha"></h2>
+        <h3 id="modalTitulo"></h3>
+        <p id="modalTexto"></p>
+        <button class="cerrar" onclick="cerrarModal()">Cerrar</button>
+    </div>
+</div>
+
+<div id="modalImagen" onclick="cerrarModalImagen()">
+    <img id="modalImagenImg" src="" alt="">
+</div>
+
+<script>
+// ===================== DATOS DE EVENTOS =====================
+const eventos = [
+    // EDAD DEL HIERRO
+    { fecha: "~1.200 a.C.", titulo: "Crisis del Bronce",              tipo: "hierro",      texto: "Crisis de las civilizaciones del Bronce en el Mediterráneo oriental: colapso de reinos micénicos, hititas y del Levante por invasiones, migraciones y convulsiones internas." },
+    { fecha: "~1.200 a.C.", titulo: "Expansión del hierro",           tipo: "hierro",      texto: "Expansión del uso del hierro en el Cercano Oriente y el Mediterráneo, transformando la tecnología militar y agrícola del mundo antiguo." },
+    { fecha: "~1.150 a.C.", titulo: "Declive micénico",               tipo: "hierro",      texto: "Declive y desaparición de los reinos micénicos en Grecia, dando paso a una época oscura de retroceso urbano y cultural." },
+    { fecha: "~1.100 a.C.", titulo: "Comunidades hebreas",            tipo: "hierro",      texto: "Formación de comunidades hebreas en Palestina, consolidando una identidad religiosa y cultural que influirá en las tres grandes religiones monoteístas." },
+    { fecha: "~1.000 a.C.", titulo: "Reino de Israel",                tipo: "hierro",      texto: "Consolidación del reino de Israel bajo monarquías centralizadas, con figuras como David y Salomón según las fuentes bíblicas." },
+    { fecha: "~1.000 a.C.", titulo: "Olmecas en Mesoamérica",         tipo: "hierro",      texto: "Desarrollo de importantes centros olmecas en Mesoamérica, considerados la civilización madre de las culturas mesoamericanas posteriores." },
+    { fecha: "~900 a.C.",   titulo: "Expansión fenicia",              tipo: "hierro",      texto: "Expansión comercial y marítima de los fenicios por el Mediterráneo, fundando colonias y difundiendo el alfabeto que sería base de la escritura occidental." },
+    { fecha: "~814 a.C.",   titulo: "Fundación de Cartago",           tipo: "hierro",      texto: "Fundación tradicional de Cartago por colonos fenicios, que se convertiría en la gran potencia comercial del Mediterráneo occidental." },
+    // GRECIA ARCAICA Y ORIENTE
+    { fecha: "~800 a.C.",   titulo: "Surgimiento de las polis",       tipo: "arcaico",     texto: "Surgimiento de las polis griegas como forma de organización política y social, base de la cultura clásica y del pensamiento político occidental." },
+    { fecha: "~776 a.C.",   titulo: "Primeros Juegos Olímpicos",      tipo: "arcaico",     texto: "Celebración de los primeros Juegos Olímpicos en Grecia, expresión de la identidad cultural panhelénica y la competencia entre ciudades-Estado." },
+    { fecha: "~750 a.C.",   titulo: "Colonización griega",            tipo: "arcaico",     texto: "Colonización griega del Mediterráneo y del mar Negro, expandiendo la cultura griega desde el sur de Francia hasta las costas del mar Negro." },
+    { fecha: "~753 a.C.",   titulo: "Fundación de Roma",              tipo: "arcaico",     texto: "Fundación tradicional de Roma, ciudad que siglos después dominaría el mundo mediterráneo y gran parte de Europa." },
+    { fecha: "~700 a.C.",   titulo: "Reinos en Anatolia",             tipo: "arcaico",     texto: "Desarrollo de reinos y ciudades fortificadas en Anatolia y Oriente Próximo, en un período de intensa competencia entre potencias regionales." },
+    { fecha: "~650 a.C.",   titulo: "Imperio asirio",                 tipo: "arcaico",     texto: "Máxima expansión del Imperio asirio, el primer gran imperio militar de la historia, conocido por su brutalidad y su avanzada organización estatal." },
+    { fecha: "~621 a.C.",   titulo: "Legislación de Dracón",          tipo: "arcaico",     texto: "Legislación de Dracón en Atenas, primer código legal escrito griego, conocido por su extrema severidad — de ahí el término 'draconiano'." },
+    { fecha: "~600 a.C.",   titulo: "Filosofía jonia",                tipo: "arcaico",     texto: "Auge filosófico y científico en las ciudades jonias, con pensadores como Tales, Anaximandro y Heráclito que buscaron explicaciones racionales del universo." },
+    { fecha: "~594 a.C.",   titulo: "Reformas de Solón",              tipo: "arcaico",     texto: "Reformas políticas y sociales de Solón en Atenas, sentando las bases de la democracia al limitar la esclavitud por deudas y ampliar la participación ciudadana." },
+    { fecha: "~550 a.C.",   titulo: "Imperio persa aqueménida",       tipo: "arcaico",     texto: "Formación del Imperio persa aqueménida bajo Ciro el Grande, el mayor Imperio conocido hasta entonces, que se extendía desde el Indo hasta el Egeo." },
+    // GRECIA CLÁSICA
+    { fecha: "~509 a.C.",   titulo: "República romana",               tipo: "clasico",     texto: "Fin de la monarquía y nacimiento de la República romana, con un sistema de gobierno basado en cónsules, el Senado y asambleas populares." },
+    { fecha: "~508 a.C.",   titulo: "Reformas de Clístenes",          tipo: "clasico",     texto: "Reformas democráticas de Clístenes en Atenas, reorganizando la ciudadanía y creando las bases institucionales de la democracia ateniense." },
+    { fecha: "~500 a.C.",   titulo: "Chavín en los Andes",            tipo: "clasico",     texto: "Desarrollo de Chavín como importante horizonte cultural andino, con una iconografía religiosa que influyó en amplias regiones de los Andes." },
+    { fecha: "~499–449 a.C.", titulo: "Guerras Médicas",              tipo: "clasico",     texto: "Guerras Médicas entre griegos y persas, en las que las polis griegas resistieron la invasión del Imperio aqueménida, afirmando su independencia cultural y política." },
+    { fecha: "~490 a.C.",   titulo: "Batalla de Maratón",             tipo: "clasico",     texto: "Batalla de Maratón: victoria ateniense sobre el ejército persa, símbolo de la resistencia griega y punto de inflexión en las Guerras Médicas." },
+    { fecha: "~480 a.C.",   titulo: "Termópilas y Salamina",          tipo: "clasico",     texto: "Batalla de las Termópilas y de Salamina: la resistencia espartana y la victoria naval ateniense cambiaron el curso de la historia occidental." },
+    { fecha: "~470–399 a.C.", titulo: "Sócrates",                     tipo: "clasico",     texto: "Vida de Sócrates y expansión de la filosofía clásica griega. Su método dialéctico y su búsqueda de la verdad fundaron la tradición filosófica occidental." },
+    { fecha: "~447 a.C.",   titulo: "El Partenón",                    tipo: "clasico",     texto: "Construcción del Partenón en Atenas bajo Pericles, cumbre del arte clásico griego y símbolo del esplendor de la democracia ateniense." },
+    { fecha: "~431–404 a.C.", titulo: "Guerra del Peloponeso",        tipo: "clasico",     texto: "Guerra del Peloponeso entre Atenas y Esparta, que debilitó profundamente a las polis griegas y abrió el camino a la hegemonía macedónica." },
+    { fecha: "~400 a.C.",   titulo: "Teotihuacán",                    tipo: "clasico",     texto: "Desarrollo de Teotihuacán en Mesoamérica, una de las mayores ciudades del mundo antiguo, con influencia cultural sobre toda la región." },
+    { fecha: "~387 a.C.",   titulo: "Academia de Platón",             tipo: "clasico",     texto: "Fundación de la Academia de Platón en Atenas, primera institución de educación superior del mundo occidental, que funcionó por casi 900 años." },
+    // HELENISMO Y ROMA
+    { fecha: "~336–323 a.C.", titulo: "Alejandro Magno",              tipo: "helenistico", texto: "Conquistas de Alejandro Magno y expansión del helenismo desde Grecia hasta la India, fusionando la cultura griega con las civilizaciones orientales." },
+    { fecha: "~300 a.C.",   titulo: "Reinos helenísticos",            tipo: "helenistico", texto: "Consolidación de los reinos helenísticos tras la muerte de Alejandro, con centros culturales como Alejandría que irradiaron el saber griego por el mundo conocido." },
+    { fecha: "~300 a.C.",   titulo: "Cultura mochica",                tipo: "helenistico", texto: "Expansión de la cultura mochica temprana en los Andes, conocida por su cerámica retrato y su organización estatal en el norte del actual Perú." },
+    { fecha: "~264–146 a.C.", titulo: "Guerras Púnicas",              tipo: "helenistico", texto: "Guerras Púnicas entre Roma y Cartago, que culminaron con la destrucción de Cartago y la hegemonía romana sobre el Mediterráneo occidental." },
+    { fecha: "~221 a.C.",   titulo: "Unificación de China",           tipo: "helenistico", texto: "Unificación de China bajo la dinastía Qin, creando el primer Estado centralizado chino, con la Gran Muralla y un sistema uniforme de escritura y medidas." },
+    { fecha: "~200 a.C.",   titulo: "Rutas comerciales afroeurasiáticas", tipo: "helenistico", texto: "Auge de rutas comerciales afroeurasiáticas, precursoras de la Ruta de la Seda, conectando el Mediterráneo con Asia central, India y China." },
+    { fecha: "~146 a.C.",   titulo: "Roma domina el Mediterráneo",    tipo: "helenistico", texto: "Roma destruye Cartago y somete a Grecia, consolidándose como la potencia dominante del mundo mediterráneo." },
+    { fecha: "~100 a.C.",   titulo: "Crisis de la República romana",  tipo: "helenistico", texto: "Crisis sociales y militares de la República romana, con las guerras civiles entre Mario y Sila anunciando el fin del sistema republicano." },
+    { fecha: "~49 a.C.",    titulo: "César cruza el Rubicón",         tipo: "helenistico", texto: "Julio César cruza el Rubicón e inicia la guerra civil romana, desafiando abiertamente al Senado y marcando el inicio del fin de la República." },
+    { fecha: "~44 a.C.",    titulo: "Asesinato de César",             tipo: "helenistico", texto: "Asesinato de Julio César en los Idus de Marzo, que desencadenó una nueva guerra civil y aceleró la transformación de Roma en Imperio." },
+    { fecha: "~31 a.C.",    titulo: "Batalla de Accio",               tipo: "helenistico", texto: "Batalla de Accio: triunfo de Octavio sobre Marco Antonio y Cleopatra, poniendo fin a las guerras civiles y abriendo la era imperial romana." },
+    { fecha: "27 a.C.",     titulo: "Augusto y el Imperio romano",    tipo: "helenistico", texto: "Inicio del Imperio romano bajo Augusto, inaugurando la Pax Romana y un período de estabilidad, prosperidad y expansión cultural sin precedentes." },
+    { fecha: "1 d.C.",      titulo: "Consolidación del Imperio",      tipo: "helenistico", texto: "Consolidación del Imperio romano como principal potencia mediterránea, con un sistema administrativo, legal y militar que moldearía la civilización occidental." }
+];
+
+const timeline = document.getElementById("timeline");
+const wrapper = document.getElementById("timelineWrapper");
+
+// Posicionamiento horizontal: primer evento a 150px, separación 135px
+const startX = 150;
+const step = 135;
+
+eventos.forEach((ev, idx) => {
+    const eventoDiv = document.createElement("div");
+    eventoDiv.className = "evento";
+    const leftPos = startX + idx * step;
+    eventoDiv.style.left = leftPos + "px";
+
+    // Punto
+    const punto = document.createElement("div");
+    punto.className = `punto ${ev.tipo}`;
+    eventoDiv.appendChild(punto);
+
+    // Contenedor para fecha y título (info)
+    const infoDiv = document.createElement("div");
+    infoDiv.className = "info";
+
+    const fechaSpan = document.createElement("div");
+    fechaSpan.className = "fecha";
+    fechaSpan.innerText = ev.fecha;
+    const tituloSpan = document.createElement("div");
+    tituloSpan.className = "titulo";
+    tituloSpan.innerText = ev.titulo;
+
+    infoDiv.appendChild(fechaSpan);
+    infoDiv.appendChild(tituloSpan);
+    eventoDiv.appendChild(infoDiv);
+
+    // Altura escalonada para cada info (para evitar superposición)
+    // Usamos una función sinusoidal: variará entre +30px y +100px respecto al punto
+    // Para 17 eventos, alternamos: los índices pares más arriba, impares más abajo, con una ligera pendiente
+    // Rotación fija de 4 niveles para evitar solapamiento entre etiquetas vecinas
+    const offsetLevels = [25, 85, 50, 115];
+    const offsetY = offsetLevels[idx % offsetLevels.length];
+    infoDiv.style.top = (offsetY + 10) + "px";  // debajo del punto (el punto está en top:0)
+    eventoDiv.style.position = "absolute";
+    eventoDiv.style.top = "0px";  // el punto se posiciona en la línea
+
+    // Línea conectora cyan entre el punto y su leyenda
+    const lineaConectora = document.createElement("div");
+    lineaConectora.style.position = "absolute";
+    lineaConectora.style.left = "50%";
+    lineaConectora.style.transform = "translateX(-50%)";
+    lineaConectora.style.top = "16px";                    // arranca al pie del punto (16px de alto)
+    lineaConectora.style.width = "1px";
+    lineaConectora.style.height = (offsetY - 6) + "px";  // llega justo al borde superior del infoDiv
+    lineaConectora.style.background = "cyan";
+    lineaConectora.style.pointerEvents = "none";
+    lineaConectora.style.zIndex = "1";
+    eventoDiv.appendChild(lineaConectora);
+
+    eventoDiv.addEventListener("click", () => {
+        abrirModal(ev.fecha, ev.titulo, ev.texto);
+    });
+
+    timeline.appendChild(eventoDiv);
+});
+
+// ===================== ETIQUETAS DE PERÍODO =====================
+const periodos = [
+    { nombre: "Edad del Hierro",          desde: 0,  hasta: 7,  imagen: "1-eh.jpg" },
+    { nombre: "Grecia Arcaica y Oriente", desde: 8,  hasta: 17, imagen: "2-ga.jpg" },
+    { nombre: "Grecia Clásica",           desde: 18, hasta: 28, imagen: "3-gc.jpg" },
+    { nombre: "Helenismo y Roma",         desde: 29, hasta: 41, imagen: "4-hr.jpg" }
+];
+
+const bracketY = 200; // px desde el top del evento, por debajo de todas las leyendas
+
+periodos.forEach(p => {
+    const xIzq   = startX + p.desde * step;
+    const xDer   = startX + p.hasta * step;
+    const ancho  = xDer - xIzq;
+    const esUnico = ancho === 0;
+
+    const bracketDiv = document.createElement("div");
+    bracketDiv.style.position    = "absolute";
+    bracketDiv.style.left        = xIzq + "px";
+    bracketDiv.style.top         = bracketY + "px";
+    bracketDiv.style.width       = ancho + "px";
+    bracketDiv.style.pointerEvents = "none";
+
+    if (!esUnico) {
+        // Línea horizontal cyan que une los extremos del período
+        const lineaH = document.createElement("div");
+        lineaH.style.position   = "absolute";
+        lineaH.style.top        = "0";
+        lineaH.style.left       = "0";
+        lineaH.style.width      = "100%";
+        lineaH.style.height     = "1px";
+        lineaH.style.background = "cyan";
+        bracketDiv.appendChild(lineaH);
+
+        // Tick vertical izquierdo
+        const tickIzq = document.createElement("div");
+        tickIzq.style.position   = "absolute";
+        tickIzq.style.left       = "0";
+        tickIzq.style.top        = "-10px";
+        tickIzq.style.width      = "1px";
+        tickIzq.style.height     = "10px";
+        tickIzq.style.background = "cyan";
+        bracketDiv.appendChild(tickIzq);
+
+        // Tick vertical derecho
+        const tickDer = document.createElement("div");
+        tickDer.style.position   = "absolute";
+        tickDer.style.right      = "0";
+        tickDer.style.top        = "-10px";
+        tickDer.style.width      = "1px";
+        tickDer.style.height     = "10px";
+        tickDer.style.background = "cyan";
+        bracketDiv.appendChild(tickDer);
+    }
+
+    // Etiqueta de nombre del período, centrada
+    const etiqueta = document.createElement("div");
+    etiqueta.style.position   = "absolute";
+    etiqueta.style.top        = "8px";
+    etiqueta.style.left       = "50%";
+    etiqueta.style.transform  = "translateX(-50%)";
+    etiqueta.style.color      = "white";
+    etiqueta.style.fontSize   = "0.95rem";
+    etiqueta.style.fontWeight = "bold";
+    etiqueta.style.whiteSpace = "nowrap";
+    etiqueta.innerText = p.nombre;
+    bracketDiv.appendChild(etiqueta);
+
+    // Marco de imagen centrado horizontalmente en el período
+    const imgSrc = "../../imagenes/" + p.imagen;
+    const frameAncho = 307;
+    const frameAlto  = 192;
+    const centroLocal = ancho / 2;  // centro relativo a bracketDiv (0 para evento único)
+
+    const frame = document.createElement("div");
+    frame.className = "frame-imagen";
+    frame.style.left = (centroLocal - frameAncho / 2) + "px";
+    frame.style.top  = "45px";   // debajo de la etiqueta de período
+
+    const imgEl = document.createElement("img");
+    imgEl.src = imgSrc;
+    imgEl.alt = p.nombre;
+    frame.appendChild(imgEl);
+    frame.addEventListener("click", () => abrirModalImagen(imgSrc));
+    bracketDiv.appendChild(frame);
+
+    timeline.appendChild(bracketDiv);
+});
+
+// Botón PLAY: "Crisis del Bronce"
+const audioCrisisBronce = new Audio("../../estudiar/grecia/audio/g34.mp3");
+const btnPlayCrisisBronce = document.createElement("div");
+btnPlayCrisisBronce.title = "Escuchar audio: Crisis del Bronce";
+btnPlayCrisisBronce.style.cssText = "position:absolute;left:135px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayCrisisBronce.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingCrisisBronce = false;
+btnPlayCrisisBronce.addEventListener("click", () => {
+    if (playingCrisisBronce) {
+        audioCrisisBronce.pause();
+        audioCrisisBronce.currentTime = 0;
+        btnPlayCrisisBronce.style.background = "#ff8c00";
+        playingCrisisBronce = false;
+    } else {
+        audioCrisisBronce.play();
+        btnPlayCrisisBronce.style.background = "#cc6f00";
+        playingCrisisBronce = true;
+    }
+});
+audioCrisisBronce.addEventListener("ended", () => {
+    btnPlayCrisisBronce.style.background = "#ff8c00";
+    playingCrisisBronce = false;
+});
+timeline.appendChild(btnPlayCrisisBronce);
+
+// Botón PLAY: "Expansión del hierro"
+const audioExpHierro = new Audio("../../estudiar/grecia/audio/g18.mp3");
+const btnPlayExpHierro = document.createElement("div");
+btnPlayExpHierro.title = "Escuchar audio: Expansión del hierro";
+btnPlayExpHierro.style.cssText = "position:absolute;left:270px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayExpHierro.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingExpHierro = false;
+btnPlayExpHierro.addEventListener("click", () => {
+    if (playingExpHierro) {
+        audioExpHierro.pause();
+        audioExpHierro.currentTime = 0;
+        btnPlayExpHierro.style.background = "#ff8c00";
+        playingExpHierro = false;
+    } else {
+        audioExpHierro.play();
+        btnPlayExpHierro.style.background = "#cc6f00";
+        playingExpHierro = true;
+    }
+});
+audioExpHierro.addEventListener("ended", () => {
+    btnPlayExpHierro.style.background = "#ff8c00";
+    playingExpHierro = false;
+});
+timeline.appendChild(btnPlayExpHierro);
+
+// Botón PLAY: "Declive micénico"
+const audioDeclMicenico = new Audio("../../estudiar/grecia/audio/g19.mp3");
+const btnPlayDeclMicenico = document.createElement("div");
+btnPlayDeclMicenico.title = "Escuchar audio: Declive micénico";
+btnPlayDeclMicenico.style.cssText = "position:absolute;left:405px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayDeclMicenico.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingDeclMicenico = false;
+btnPlayDeclMicenico.addEventListener("click", () => {
+    if (playingDeclMicenico) {
+        audioDeclMicenico.pause();
+        audioDeclMicenico.currentTime = 0;
+        btnPlayDeclMicenico.style.background = "#ff8c00";
+        playingDeclMicenico = false;
+    } else {
+        audioDeclMicenico.play();
+        btnPlayDeclMicenico.style.background = "#cc6f00";
+        playingDeclMicenico = true;
+    }
+});
+audioDeclMicenico.addEventListener("ended", () => {
+    btnPlayDeclMicenico.style.background = "#ff8c00";
+    playingDeclMicenico = false;
+});
+timeline.appendChild(btnPlayDeclMicenico);
+
+// Botón PLAY: "Comunidades hebreas"
+const audioComHebreas = new Audio("../../estudiar/fenicios-hebreos/audio/fe6.mp3");
+const btnPlayComHebreas = document.createElement("div");
+btnPlayComHebreas.title = "Escuchar audio: Comunidades hebreas";
+btnPlayComHebreas.style.cssText = "position:absolute;left:540px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayComHebreas.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingComHebreas = false;
+btnPlayComHebreas.addEventListener("click", () => {
+    if (playingComHebreas) {
+        audioComHebreas.pause();
+        audioComHebreas.currentTime = 0;
+        btnPlayComHebreas.style.background = "#ff8c00";
+        playingComHebreas = false;
+    } else {
+        audioComHebreas.play();
+        btnPlayComHebreas.style.background = "#cc6f00";
+        playingComHebreas = true;
+    }
+});
+audioComHebreas.addEventListener("ended", () => {
+    btnPlayComHebreas.style.background = "#ff8c00";
+    playingComHebreas = false;
+});
+timeline.appendChild(btnPlayComHebreas);
+
+// Botón PLAY: "Reino de Israel"
+const audioReinoIsrael = new Audio("../../estudiar/fenicios-hebreos/audio/fe7.mp3");
+const btnPlayReinoIsrael = document.createElement("div");
+btnPlayReinoIsrael.title = "Escuchar audio: Reino de Israel";
+btnPlayReinoIsrael.style.cssText = "position:absolute;left:675px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayReinoIsrael.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingReinoIsrael = false;
+btnPlayReinoIsrael.addEventListener("click", () => {
+    if (playingReinoIsrael) {
+        audioReinoIsrael.pause();
+        audioReinoIsrael.currentTime = 0;
+        btnPlayReinoIsrael.style.background = "#ff8c00";
+        playingReinoIsrael = false;
+    } else {
+        audioReinoIsrael.play();
+        btnPlayReinoIsrael.style.background = "#cc6f00";
+        playingReinoIsrael = true;
+    }
+});
+audioReinoIsrael.addEventListener("ended", () => {
+    btnPlayReinoIsrael.style.background = "#ff8c00";
+    playingReinoIsrael = false;
+});
+timeline.appendChild(btnPlayReinoIsrael);
+
+// Botón PLAY: "Olmecas en Mesoamérica"
+const audioOlmecas = new Audio("../../estudiar/america/audio/aa8.mp3");
+const btnPlayOlmecas = document.createElement("div");
+btnPlayOlmecas.title = "Escuchar audio: Olmecas en Mesoamérica";
+btnPlayOlmecas.style.cssText = "position:absolute;left:810px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayOlmecas.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingOlmecas = false;
+btnPlayOlmecas.addEventListener("click", () => {
+    if (playingOlmecas) {
+        audioOlmecas.pause();
+        audioOlmecas.currentTime = 0;
+        btnPlayOlmecas.style.background = "#ff8c00";
+        playingOlmecas = false;
+    } else {
+        audioOlmecas.play();
+        btnPlayOlmecas.style.background = "#cc6f00";
+        playingOlmecas = true;
+    }
+});
+audioOlmecas.addEventListener("ended", () => {
+    btnPlayOlmecas.style.background = "#ff8c00";
+    playingOlmecas = false;
+});
+timeline.appendChild(btnPlayOlmecas);
+
+// Botón PLAY: "Expansión fenicia"
+const audioExpFenicia = new Audio("../../estudiar/fenicios-hebreos/audio/fe8.mp3");
+const btnPlayExpFenicia = document.createElement("div");
+btnPlayExpFenicia.title = "Escuchar audio: Expansión fenicia";
+btnPlayExpFenicia.style.cssText = "position:absolute;left:945px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayExpFenicia.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingExpFenicia = false;
+btnPlayExpFenicia.addEventListener("click", () => {
+    if (playingExpFenicia) {
+        audioExpFenicia.pause();
+        audioExpFenicia.currentTime = 0;
+        btnPlayExpFenicia.style.background = "#ff8c00";
+        playingExpFenicia = false;
+    } else {
+        audioExpFenicia.play();
+        btnPlayExpFenicia.style.background = "#cc6f00";
+        playingExpFenicia = true;
+    }
+});
+audioExpFenicia.addEventListener("ended", () => {
+    btnPlayExpFenicia.style.background = "#ff8c00";
+    playingExpFenicia = false;
+});
+timeline.appendChild(btnPlayExpFenicia);
+
+// Botón PLAY: "Fundación de Cartago"
+const audioFundCartago = new Audio("../../estudiar/fenicios-hebreos/audio/fe9.mp3");
+const btnPlayFundCartago = document.createElement("div");
+btnPlayFundCartago.title = "Escuchar audio: Fundación de Cartago";
+btnPlayFundCartago.style.cssText = "position:absolute;left:1080px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayFundCartago.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingFundCartago = false;
+btnPlayFundCartago.addEventListener("click", () => {
+    if (playingFundCartago) {
+        audioFundCartago.pause();
+        audioFundCartago.currentTime = 0;
+        btnPlayFundCartago.style.background = "#ff8c00";
+        playingFundCartago = false;
+    } else {
+        audioFundCartago.play();
+        btnPlayFundCartago.style.background = "#cc6f00";
+        playingFundCartago = true;
+    }
+});
+audioFundCartago.addEventListener("ended", () => {
+    btnPlayFundCartago.style.background = "#ff8c00";
+    playingFundCartago = false;
+});
+timeline.appendChild(btnPlayFundCartago);
+
+// Botón PLAY: "Surgimiento de las polis"
+const audioSurgPolis = new Audio("../../estudiar/grecia/audio/g20.mp3");
+const btnPlaySurgPolis = document.createElement("div");
+btnPlaySurgPolis.title = "Escuchar audio: Surgimiento de las polis";
+btnPlaySurgPolis.style.cssText = "position:absolute;left:1215px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlaySurgPolis.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingSurgPolis = false;
+btnPlaySurgPolis.addEventListener("click", () => {
+    if (playingSurgPolis) {
+        audioSurgPolis.pause();
+        audioSurgPolis.currentTime = 0;
+        btnPlaySurgPolis.style.background = "#ff8c00";
+        playingSurgPolis = false;
+    } else {
+        audioSurgPolis.play();
+        btnPlaySurgPolis.style.background = "#cc6f00";
+        playingSurgPolis = true;
+    }
+});
+audioSurgPolis.addEventListener("ended", () => {
+    btnPlaySurgPolis.style.background = "#ff8c00";
+    playingSurgPolis = false;
+});
+timeline.appendChild(btnPlaySurgPolis);
+
+// Botón PLAY: "Colonización griega"
+const audioColonGriega = new Audio("../../estudiar/grecia/audio/g21.mp3");
+const btnPlayColonGriega = document.createElement("div");
+btnPlayColonGriega.title = "Escuchar audio: Colonización griega";
+btnPlayColonGriega.style.cssText = "position:absolute;left:1485px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayColonGriega.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingColonGriega = false;
+btnPlayColonGriega.addEventListener("click", () => {
+    if (playingColonGriega) {
+        audioColonGriega.pause();
+        audioColonGriega.currentTime = 0;
+        btnPlayColonGriega.style.background = "#ff8c00";
+        playingColonGriega = false;
+    } else {
+        audioColonGriega.play();
+        btnPlayColonGriega.style.background = "#cc6f00";
+        playingColonGriega = true;
+    }
+});
+audioColonGriega.addEventListener("ended", () => {
+    btnPlayColonGriega.style.background = "#ff8c00";
+    playingColonGriega = false;
+});
+timeline.appendChild(btnPlayColonGriega);
+
+// Botón PLAY: "Fundación de Roma"
+const audioFundRoma = new Audio("../../estudiar/roma/audio/r1.mp3");
+const btnPlayFundRoma = document.createElement("div");
+btnPlayFundRoma.title = "Escuchar audio: Fundación de Roma";
+btnPlayFundRoma.style.cssText = "position:absolute;left:1620px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayFundRoma.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingFundRoma = false;
+btnPlayFundRoma.addEventListener("click", () => {
+    if (playingFundRoma) {
+        audioFundRoma.pause();
+        audioFundRoma.currentTime = 0;
+        btnPlayFundRoma.style.background = "#ff8c00";
+        playingFundRoma = false;
+    } else {
+        audioFundRoma.play();
+        btnPlayFundRoma.style.background = "#cc6f00";
+        playingFundRoma = true;
+    }
+});
+audioFundRoma.addEventListener("ended", () => {
+    btnPlayFundRoma.style.background = "#ff8c00";
+    playingFundRoma = false;
+});
+timeline.appendChild(btnPlayFundRoma);
+
+// Botón PLAY: "Reinos en Anatolia"
+const audioReinosAnatolia = new Audio("../../estudiar/mesopotamia/audio/m12.mp3");
+const btnPlayReinosAnatolia = document.createElement("div");
+btnPlayReinosAnatolia.title = "Escuchar audio: Reinos en Anatolia";
+btnPlayReinosAnatolia.style.cssText = "position:absolute;left:1755px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayReinosAnatolia.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingReinosAnatolia = false;
+btnPlayReinosAnatolia.addEventListener("click", () => {
+    if (playingReinosAnatolia) {
+        audioReinosAnatolia.pause();
+        audioReinosAnatolia.currentTime = 0;
+        btnPlayReinosAnatolia.style.background = "#ff8c00";
+        playingReinosAnatolia = false;
+    } else {
+        audioReinosAnatolia.play();
+        btnPlayReinosAnatolia.style.background = "#cc6f00";
+        playingReinosAnatolia = true;
+    }
+});
+audioReinosAnatolia.addEventListener("ended", () => {
+    btnPlayReinosAnatolia.style.background = "#ff8c00";
+    playingReinosAnatolia = false;
+});
+timeline.appendChild(btnPlayReinosAnatolia);
+
+// Botón PLAY: "Imperio asirio"
+const audioImpAsirio = new Audio("../../estudiar/mesopotamia/audio/m13.mp3");
+const btnPlayImpAsirio = document.createElement("div");
+btnPlayImpAsirio.title = "Escuchar audio: Imperio asirio";
+btnPlayImpAsirio.style.cssText = "position:absolute;left:1890px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayImpAsirio.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingImpAsirio = false;
+btnPlayImpAsirio.addEventListener("click", () => {
+    if (playingImpAsirio) {
+        audioImpAsirio.pause();
+        audioImpAsirio.currentTime = 0;
+        btnPlayImpAsirio.style.background = "#ff8c00";
+        playingImpAsirio = false;
+    } else {
+        audioImpAsirio.play();
+        btnPlayImpAsirio.style.background = "#cc6f00";
+        playingImpAsirio = true;
+    }
+});
+audioImpAsirio.addEventListener("ended", () => {
+    btnPlayImpAsirio.style.background = "#ff8c00";
+    playingImpAsirio = false;
+});
+timeline.appendChild(btnPlayImpAsirio);
+
+// Botón PLAY: "Legislación de Dracón"
+const audioLegDracon = new Audio("../../estudiar/grecia/audio/g22.mp3");
+const btnPlayLegDracon = document.createElement("div");
+btnPlayLegDracon.title = "Escuchar audio: Legislación de Dracón";
+btnPlayLegDracon.style.cssText = "position:absolute;left:2025px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayLegDracon.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingLegDracon = false;
+btnPlayLegDracon.addEventListener("click", () => {
+    if (playingLegDracon) {
+        audioLegDracon.pause();
+        audioLegDracon.currentTime = 0;
+        btnPlayLegDracon.style.background = "#ff8c00";
+        playingLegDracon = false;
+    } else {
+        audioLegDracon.play();
+        btnPlayLegDracon.style.background = "#cc6f00";
+        playingLegDracon = true;
+    }
+});
+audioLegDracon.addEventListener("ended", () => {
+    btnPlayLegDracon.style.background = "#ff8c00";
+    playingLegDracon = false;
+});
+timeline.appendChild(btnPlayLegDracon);
+
+// Botón PLAY: "Filosofía jonia"
+const audioFiloJonia = new Audio("../../estudiar/grecia/audio/g23.mp3");
+const btnPlayFiloJonia = document.createElement("div");
+btnPlayFiloJonia.title = "Escuchar audio: Filosofía jonia";
+btnPlayFiloJonia.style.cssText = "position:absolute;left:2160px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayFiloJonia.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingFiloJonia = false;
+btnPlayFiloJonia.addEventListener("click", () => {
+    if (playingFiloJonia) {
+        audioFiloJonia.pause();
+        audioFiloJonia.currentTime = 0;
+        btnPlayFiloJonia.style.background = "#ff8c00";
+        playingFiloJonia = false;
+    } else {
+        audioFiloJonia.play();
+        btnPlayFiloJonia.style.background = "#cc6f00";
+        playingFiloJonia = true;
+    }
+});
+audioFiloJonia.addEventListener("ended", () => {
+    btnPlayFiloJonia.style.background = "#ff8c00";
+    playingFiloJonia = false;
+});
+timeline.appendChild(btnPlayFiloJonia);
+
+// Botón PLAY: "Reformas de Solón"
+const audioRefSolon = new Audio("../../estudiar/grecia/audio/g24.mp3");
+const btnPlayRefSolon = document.createElement("div");
+btnPlayRefSolon.title = "Escuchar audio: Reformas de Solón";
+btnPlayRefSolon.style.cssText = "position:absolute;left:2295px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayRefSolon.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingRefSolon = false;
+btnPlayRefSolon.addEventListener("click", () => {
+    if (playingRefSolon) {
+        audioRefSolon.pause();
+        audioRefSolon.currentTime = 0;
+        btnPlayRefSolon.style.background = "#ff8c00";
+        playingRefSolon = false;
+    } else {
+        audioRefSolon.play();
+        btnPlayRefSolon.style.background = "#cc6f00";
+        playingRefSolon = true;
+    }
+});
+audioRefSolon.addEventListener("ended", () => {
+    btnPlayRefSolon.style.background = "#ff8c00";
+    playingRefSolon = false;
+});
+timeline.appendChild(btnPlayRefSolon);
+
+// Botón PLAY: "Imperio persa aqueménida"
+const audioImpPersa = new Audio("../../estudiar/mesopotamia/audio/m14.mp3");
+const btnPlayImpPersa = document.createElement("div");
+btnPlayImpPersa.title = "Escuchar audio: Imperio persa aqueménida";
+btnPlayImpPersa.style.cssText = "position:absolute;left:2430px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayImpPersa.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingImpPersa = false;
+btnPlayImpPersa.addEventListener("click", () => {
+    if (playingImpPersa) {
+        audioImpPersa.pause();
+        audioImpPersa.currentTime = 0;
+        btnPlayImpPersa.style.background = "#ff8c00";
+        playingImpPersa = false;
+    } else {
+        audioImpPersa.play();
+        btnPlayImpPersa.style.background = "#cc6f00";
+        playingImpPersa = true;
+    }
+});
+audioImpPersa.addEventListener("ended", () => {
+    btnPlayImpPersa.style.background = "#ff8c00";
+    playingImpPersa = false;
+});
+timeline.appendChild(btnPlayImpPersa);
+
+// Botón PLAY: "República romana"
+const audioRepRomana = new Audio("../../estudiar/roma/audio/r2.mp3");
+const btnPlayRepRomana = document.createElement("div");
+btnPlayRepRomana.title = "Escuchar audio: República romana";
+btnPlayRepRomana.style.cssText = "position:absolute;left:2565px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayRepRomana.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingRepRomana = false;
+btnPlayRepRomana.addEventListener("click", () => {
+    if (playingRepRomana) {
+        audioRepRomana.pause();
+        audioRepRomana.currentTime = 0;
+        btnPlayRepRomana.style.background = "#ff8c00";
+        playingRepRomana = false;
+    } else {
+        audioRepRomana.play();
+        btnPlayRepRomana.style.background = "#cc6f00";
+        playingRepRomana = true;
+    }
+});
+audioRepRomana.addEventListener("ended", () => {
+    btnPlayRepRomana.style.background = "#ff8c00";
+    playingRepRomana = false;
+});
+timeline.appendChild(btnPlayRepRomana);
+
+// Botón PLAY: "Reformas de Clístenes"
+const audioRefClistenes = new Audio("../../estudiar/grecia/audio/g25.mp3");
+const btnPlayRefClistenes = document.createElement("div");
+btnPlayRefClistenes.title = "Escuchar audio: Reformas de Clístenes";
+btnPlayRefClistenes.style.cssText = "position:absolute;left:2700px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayRefClistenes.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingRefClistenes = false;
+btnPlayRefClistenes.addEventListener("click", () => {
+    if (playingRefClistenes) {
+        audioRefClistenes.pause();
+        audioRefClistenes.currentTime = 0;
+        btnPlayRefClistenes.style.background = "#ff8c00";
+        playingRefClistenes = false;
+    } else {
+        audioRefClistenes.play();
+        btnPlayRefClistenes.style.background = "#cc6f00";
+        playingRefClistenes = true;
+    }
+});
+audioRefClistenes.addEventListener("ended", () => {
+    btnPlayRefClistenes.style.background = "#ff8c00";
+    playingRefClistenes = false;
+});
+timeline.appendChild(btnPlayRefClistenes);
+
+// Botón PLAY: "Chavín en los Andes"
+const audioChavin = new Audio("../../estudiar/america/audio/aa9.mp3");
+const btnPlayChavin = document.createElement("div");
+btnPlayChavin.title = "Escuchar audio: Chavín en los Andes";
+btnPlayChavin.style.cssText = "position:absolute;left:2835px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayChavin.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingChavin = false;
+btnPlayChavin.addEventListener("click", () => {
+    if (playingChavin) {
+        audioChavin.pause();
+        audioChavin.currentTime = 0;
+        btnPlayChavin.style.background = "#ff8c00";
+        playingChavin = false;
+    } else {
+        audioChavin.play();
+        btnPlayChavin.style.background = "#cc6f00";
+        playingChavin = true;
+    }
+});
+audioChavin.addEventListener("ended", () => {
+    btnPlayChavin.style.background = "#ff8c00";
+    playingChavin = false;
+});
+timeline.appendChild(btnPlayChavin);
+
+// Botón PLAY: "Guerras Médicas"
+const audioGuerMedicas = new Audio("../../estudiar/grecia/audio/g26.mp3");
+const btnPlayGuerMedicas = document.createElement("div");
+btnPlayGuerMedicas.title = "Escuchar audio: Guerras Médicas";
+btnPlayGuerMedicas.style.cssText = "position:absolute;left:2970px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayGuerMedicas.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingGuerMedicas = false;
+btnPlayGuerMedicas.addEventListener("click", () => {
+    if (playingGuerMedicas) {
+        audioGuerMedicas.pause();
+        audioGuerMedicas.currentTime = 0;
+        btnPlayGuerMedicas.style.background = "#ff8c00";
+        playingGuerMedicas = false;
+    } else {
+        audioGuerMedicas.play();
+        btnPlayGuerMedicas.style.background = "#cc6f00";
+        playingGuerMedicas = true;
+    }
+});
+audioGuerMedicas.addEventListener("ended", () => {
+    btnPlayGuerMedicas.style.background = "#ff8c00";
+    playingGuerMedicas = false;
+});
+timeline.appendChild(btnPlayGuerMedicas);
+
+// Botón PLAY: "Batalla de Maratón"
+const audioBatMaraton = new Audio("../../estudiar/grecia/audio/g27.mp3");
+const btnPlayBatMaraton = document.createElement("div");
+btnPlayBatMaraton.title = "Escuchar audio: Batalla de Maratón";
+btnPlayBatMaraton.style.cssText = "position:absolute;left:3105px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayBatMaraton.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingBatMaraton = false;
+btnPlayBatMaraton.addEventListener("click", () => {
+    if (playingBatMaraton) {
+        audioBatMaraton.pause();
+        audioBatMaraton.currentTime = 0;
+        btnPlayBatMaraton.style.background = "#ff8c00";
+        playingBatMaraton = false;
+    } else {
+        audioBatMaraton.play();
+        btnPlayBatMaraton.style.background = "#cc6f00";
+        playingBatMaraton = true;
+    }
+});
+audioBatMaraton.addEventListener("ended", () => {
+    btnPlayBatMaraton.style.background = "#ff8c00";
+    playingBatMaraton = false;
+});
+timeline.appendChild(btnPlayBatMaraton);
+
+// Botón PLAY: "Termópilas y Salamina"
+const audioTermópilas = new Audio("../../estudiar/grecia/audio/g28.mp3");
+const btnPlayTermópilas = document.createElement("div");
+btnPlayTermópilas.title = "Escuchar audio: Termópilas y Salamina";
+btnPlayTermópilas.style.cssText = "position:absolute;left:3240px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayTermópilas.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingTermópilas = false;
+btnPlayTermópilas.addEventListener("click", () => {
+    if (playingTermópilas) {
+        audioTermópilas.pause();
+        audioTermópilas.currentTime = 0;
+        btnPlayTermópilas.style.background = "#ff8c00";
+        playingTermópilas = false;
+    } else {
+        audioTermópilas.play();
+        btnPlayTermópilas.style.background = "#cc6f00";
+        playingTermópilas = true;
+    }
+});
+audioTermópilas.addEventListener("ended", () => {
+    btnPlayTermópilas.style.background = "#ff8c00";
+    playingTermópilas = false;
+});
+timeline.appendChild(btnPlayTermópilas);
+
+// Botón PLAY: "Sócrates"
+const audioSocrates = new Audio("../../estudiar/grecia/audio/g29.mp3");
+const btnPlaySocrates = document.createElement("div");
+btnPlaySocrates.title = "Escuchar audio: Sócrates";
+btnPlaySocrates.style.cssText = "position:absolute;left:3375px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlaySocrates.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingSocrates = false;
+btnPlaySocrates.addEventListener("click", () => {
+    if (playingSocrates) {
+        audioSocrates.pause();
+        audioSocrates.currentTime = 0;
+        btnPlaySocrates.style.background = "#ff8c00";
+        playingSocrates = false;
+    } else {
+        audioSocrates.play();
+        btnPlaySocrates.style.background = "#cc6f00";
+        playingSocrates = true;
+    }
+});
+audioSocrates.addEventListener("ended", () => {
+    btnPlaySocrates.style.background = "#ff8c00";
+    playingSocrates = false;
+});
+timeline.appendChild(btnPlaySocrates);
+
+// Botón PLAY: "Guerra del Peloponeso"
+const audioGuerPelopones = new Audio("../../estudiar/grecia/audio/g30.mp3");
+const btnPlayGuerPelopones = document.createElement("div");
+btnPlayGuerPelopones.title = "Escuchar audio: Guerra del Peloponeso";
+btnPlayGuerPelopones.style.cssText = "position:absolute;left:3645px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayGuerPelopones.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingGuerPelopones = false;
+btnPlayGuerPelopones.addEventListener("click", () => {
+    if (playingGuerPelopones) {
+        audioGuerPelopones.pause();
+        audioGuerPelopones.currentTime = 0;
+        btnPlayGuerPelopones.style.background = "#ff8c00";
+        playingGuerPelopones = false;
+    } else {
+        audioGuerPelopones.play();
+        btnPlayGuerPelopones.style.background = "#cc6f00";
+        playingGuerPelopones = true;
+    }
+});
+audioGuerPelopones.addEventListener("ended", () => {
+    btnPlayGuerPelopones.style.background = "#ff8c00";
+    playingGuerPelopones = false;
+});
+timeline.appendChild(btnPlayGuerPelopones);
+
+// Botón PLAY: "Teotihuacán"
+const audioTeotihuacan = new Audio("../../estudiar/america/audio/aa10.mp3");
+const btnPlayTeotihuacan = document.createElement("div");
+btnPlayTeotihuacan.title = "Escuchar audio: Teotihuacán";
+btnPlayTeotihuacan.style.cssText = "position:absolute;left:3780px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayTeotihuacan.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingTeotihuacan = false;
+btnPlayTeotihuacan.addEventListener("click", () => {
+    if (playingTeotihuacan) {
+        audioTeotihuacan.pause();
+        audioTeotihuacan.currentTime = 0;
+        btnPlayTeotihuacan.style.background = "#ff8c00";
+        playingTeotihuacan = false;
+    } else {
+        audioTeotihuacan.play();
+        btnPlayTeotihuacan.style.background = "#cc6f00";
+        playingTeotihuacan = true;
+    }
+});
+audioTeotihuacan.addEventListener("ended", () => {
+    btnPlayTeotihuacan.style.background = "#ff8c00";
+    playingTeotihuacan = false;
+});
+timeline.appendChild(btnPlayTeotihuacan);
+
+// Botón PLAY: "Academia de Platón"
+const audioAcadPlaton = new Audio("../../estudiar/grecia/audio/g31.mp3");
+const btnPlayAcadPlaton = document.createElement("div");
+btnPlayAcadPlaton.title = "Escuchar audio: Academia de Platón";
+btnPlayAcadPlaton.style.cssText = "position:absolute;left:3915px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayAcadPlaton.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingAcadPlaton = false;
+btnPlayAcadPlaton.addEventListener("click", () => {
+    if (playingAcadPlaton) {
+        audioAcadPlaton.pause();
+        audioAcadPlaton.currentTime = 0;
+        btnPlayAcadPlaton.style.background = "#ff8c00";
+        playingAcadPlaton = false;
+    } else {
+        audioAcadPlaton.play();
+        btnPlayAcadPlaton.style.background = "#cc6f00";
+        playingAcadPlaton = true;
+    }
+});
+audioAcadPlaton.addEventListener("ended", () => {
+    btnPlayAcadPlaton.style.background = "#ff8c00";
+    playingAcadPlaton = false;
+});
+timeline.appendChild(btnPlayAcadPlaton);
+
+// Botón PLAY: "Alejandro Magno"
+const audioAlejMagno = new Audio("../../estudiar/grecia/audio/g32.mp3");
+const btnPlayAlejMagno = document.createElement("div");
+btnPlayAlejMagno.title = "Escuchar audio: Alejandro Magno";
+btnPlayAlejMagno.style.cssText = "position:absolute;left:4050px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayAlejMagno.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingAlejMagno = false;
+btnPlayAlejMagno.addEventListener("click", () => {
+    if (playingAlejMagno) {
+        audioAlejMagno.pause();
+        audioAlejMagno.currentTime = 0;
+        btnPlayAlejMagno.style.background = "#ff8c00";
+        playingAlejMagno = false;
+    } else {
+        audioAlejMagno.play();
+        btnPlayAlejMagno.style.background = "#cc6f00";
+        playingAlejMagno = true;
+    }
+});
+audioAlejMagno.addEventListener("ended", () => {
+    btnPlayAlejMagno.style.background = "#ff8c00";
+    playingAlejMagno = false;
+});
+timeline.appendChild(btnPlayAlejMagno);
+
+// Botón PLAY: "Reinos helenísticos"
+const audioReinosHelen = new Audio("../../estudiar/grecia/audio/g33.mp3");
+const btnPlayReinosHelen = document.createElement("div");
+btnPlayReinosHelen.title = "Escuchar audio: Reinos helenísticos";
+btnPlayReinosHelen.style.cssText = "position:absolute;left:4185px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayReinosHelen.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingReinosHelen = false;
+btnPlayReinosHelen.addEventListener("click", () => {
+    if (playingReinosHelen) {
+        audioReinosHelen.pause();
+        audioReinosHelen.currentTime = 0;
+        btnPlayReinosHelen.style.background = "#ff8c00";
+        playingReinosHelen = false;
+    } else {
+        audioReinosHelen.play();
+        btnPlayReinosHelen.style.background = "#cc6f00";
+        playingReinosHelen = true;
+    }
+});
+audioReinosHelen.addEventListener("ended", () => {
+    btnPlayReinosHelen.style.background = "#ff8c00";
+    playingReinosHelen = false;
+});
+timeline.appendChild(btnPlayReinosHelen);
+
+// Botón PLAY: "Cultura mochica"
+const audioCultMochica = new Audio("../../estudiar/america/audio/aa11.mp3");
+const btnPlayCultMochica = document.createElement("div");
+btnPlayCultMochica.title = "Escuchar audio: Cultura mochica";
+btnPlayCultMochica.style.cssText = "position:absolute;left:4320px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayCultMochica.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingCultMochica = false;
+btnPlayCultMochica.addEventListener("click", () => {
+    if (playingCultMochica) {
+        audioCultMochica.pause();
+        audioCultMochica.currentTime = 0;
+        btnPlayCultMochica.style.background = "#ff8c00";
+        playingCultMochica = false;
+    } else {
+        audioCultMochica.play();
+        btnPlayCultMochica.style.background = "#cc6f00";
+        playingCultMochica = true;
+    }
+});
+audioCultMochica.addEventListener("ended", () => {
+    btnPlayCultMochica.style.background = "#ff8c00";
+    playingCultMochica = false;
+});
+timeline.appendChild(btnPlayCultMochica);
+
+// Botón PLAY: "Guerras Púnicas"
+const audioGuerPunicas = new Audio("../../estudiar/roma/audio/r15.mp3");
+const btnPlayGuerPunicas = document.createElement("div");
+btnPlayGuerPunicas.title = "Escuchar audio: Guerras Púnicas";
+btnPlayGuerPunicas.style.cssText = "position:absolute;left:4455px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayGuerPunicas.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingGuerPunicas = false;
+btnPlayGuerPunicas.addEventListener("click", () => {
+    if (playingGuerPunicas) {
+        audioGuerPunicas.pause();
+        audioGuerPunicas.currentTime = 0;
+        btnPlayGuerPunicas.style.background = "#ff8c00";
+        playingGuerPunicas = false;
+    } else {
+        audioGuerPunicas.play();
+        btnPlayGuerPunicas.style.background = "#cc6f00";
+        playingGuerPunicas = true;
+    }
+});
+audioGuerPunicas.addEventListener("ended", () => {
+    btnPlayGuerPunicas.style.background = "#ff8c00";
+    playingGuerPunicas = false;
+});
+timeline.appendChild(btnPlayGuerPunicas);
+
+// Botón PLAY: "Unificación de China"
+const audioUnifChina = new Audio("../../estudiar/india-china/audios/ci1.mp3");
+const btnPlayUnifChina = document.createElement("div");
+btnPlayUnifChina.title = "Escuchar audio: Unificación de China";
+btnPlayUnifChina.style.cssText = "position:absolute;left:4590px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayUnifChina.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingUnifChina = false;
+btnPlayUnifChina.addEventListener("click", () => {
+    if (playingUnifChina) {
+        audioUnifChina.pause();
+        audioUnifChina.currentTime = 0;
+        btnPlayUnifChina.style.background = "#ff8c00";
+        playingUnifChina = false;
+    } else {
+        audioUnifChina.play();
+        btnPlayUnifChina.style.background = "#cc6f00";
+        playingUnifChina = true;
+    }
+});
+audioUnifChina.addEventListener("ended", () => {
+    btnPlayUnifChina.style.background = "#ff8c00";
+    playingUnifChina = false;
+});
+timeline.appendChild(btnPlayUnifChina);
+
+// Botón PLAY: "Rutas comerciales"
+const audioRutasComercial = new Audio("../../estudiar/comparadas/rc1.mp3");
+const btnPlayRutasComercial = document.createElement("div");
+btnPlayRutasComercial.title = "Escuchar audio: Rutas comerciales";
+btnPlayRutasComercial.style.cssText = "position:absolute;left:4725px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayRutasComercial.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingRutasComercial = false;
+btnPlayRutasComercial.addEventListener("click", () => {
+    if (playingRutasComercial) {
+        audioRutasComercial.pause();
+        audioRutasComercial.currentTime = 0;
+        btnPlayRutasComercial.style.background = "#ff8c00";
+        playingRutasComercial = false;
+    } else {
+        audioRutasComercial.play();
+        btnPlayRutasComercial.style.background = "#cc6f00";
+        playingRutasComercial = true;
+    }
+});
+audioRutasComercial.addEventListener("ended", () => {
+    btnPlayRutasComercial.style.background = "#ff8c00";
+    playingRutasComercial = false;
+});
+timeline.appendChild(btnPlayRutasComercial);
+
+// Botón PLAY: "Crisis de la República romana"
+const audioCrisisRepRom = new Audio("../../estudiar/roma/audio/r16.mp3");
+const btnPlayCrisisRepRom = document.createElement("div");
+btnPlayCrisisRepRom.title = "Escuchar audio: Crisis de la República romana";
+btnPlayCrisisRepRom.style.cssText = "position:absolute;left:4995px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayCrisisRepRom.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingCrisisRepRom = false;
+btnPlayCrisisRepRom.addEventListener("click", () => {
+    if (playingCrisisRepRom) {
+        audioCrisisRepRom.pause();
+        audioCrisisRepRom.currentTime = 0;
+        btnPlayCrisisRepRom.style.background = "#ff8c00";
+        playingCrisisRepRom = false;
+    } else {
+        audioCrisisRepRom.play();
+        btnPlayCrisisRepRom.style.background = "#cc6f00";
+        playingCrisisRepRom = true;
+    }
+});
+audioCrisisRepRom.addEventListener("ended", () => {
+    btnPlayCrisisRepRom.style.background = "#ff8c00";
+    playingCrisisRepRom = false;
+});
+timeline.appendChild(btnPlayCrisisRepRom);
+
+// Botón PLAY: "Asesinato de César"
+const audioAsesinatoCesar = new Audio("../../estudiar/roma/audio/r17.mp3");
+const btnPlayAsesinatoCesar = document.createElement("div");
+btnPlayAsesinatoCesar.title = "Escuchar audio: Asesinato de César";
+btnPlayAsesinatoCesar.style.cssText = "position:absolute;left:5265px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayAsesinatoCesar.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingAsesinatoCesar = false;
+btnPlayAsesinatoCesar.addEventListener("click", () => {
+    if (playingAsesinatoCesar) {
+        audioAsesinatoCesar.pause();
+        audioAsesinatoCesar.currentTime = 0;
+        btnPlayAsesinatoCesar.style.background = "#ff8c00";
+        playingAsesinatoCesar = false;
+    } else {
+        audioAsesinatoCesar.play();
+        btnPlayAsesinatoCesar.style.background = "#cc6f00";
+        playingAsesinatoCesar = true;
+    }
+});
+audioAsesinatoCesar.addEventListener("ended", () => {
+    btnPlayAsesinatoCesar.style.background = "#ff8c00";
+    playingAsesinatoCesar = false;
+});
+timeline.appendChild(btnPlayAsesinatoCesar);
+
+// Botón PLAY: "Batalla de Accio"
+const audioBatAccio = new Audio("../../estudiar/roma/audio/r18.mp3");
+const btnPlayBatAccio = document.createElement("div");
+btnPlayBatAccio.title = "Escuchar audio: Batalla de Accio";
+btnPlayBatAccio.style.cssText = "position:absolute;left:5400px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayBatAccio.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingBatAccio = false;
+btnPlayBatAccio.addEventListener("click", () => {
+    if (playingBatAccio) {
+        audioBatAccio.pause();
+        audioBatAccio.currentTime = 0;
+        btnPlayBatAccio.style.background = "#ff8c00";
+        playingBatAccio = false;
+    } else {
+        audioBatAccio.play();
+        btnPlayBatAccio.style.background = "#cc6f00";
+        playingBatAccio = true;
+    }
+});
+audioBatAccio.addEventListener("ended", () => {
+    btnPlayBatAccio.style.background = "#ff8c00";
+    playingBatAccio = false;
+});
+timeline.appendChild(btnPlayBatAccio);
+
+// Botón PLAY: "Augusto y el Imperio romano"
+const audioAugusto = new Audio("../../estudiar/roma/audio/r19.mp3");
+const btnPlayAugusto = document.createElement("div");
+btnPlayAugusto.title = "Escuchar audio: Augusto y el Imperio romano";
+btnPlayAugusto.style.cssText = "position:absolute;left:5535px;top:130px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayAugusto.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingAugusto = false;
+btnPlayAugusto.addEventListener("click", () => {
+    if (playingAugusto) {
+        audioAugusto.pause();
+        audioAugusto.currentTime = 0;
+        btnPlayAugusto.style.background = "#ff8c00";
+        playingAugusto = false;
+    } else {
+        audioAugusto.play();
+        btnPlayAugusto.style.background = "#cc6f00";
+        playingAugusto = true;
+    }
+});
+audioAugusto.addEventListener("ended", () => {
+    btnPlayAugusto.style.background = "#ff8c00";
+    playingAugusto = false;
+});
+timeline.appendChild(btnPlayAugusto);
+
+// Botón PLAY: "Consolidación del Imperio"
+const audioConsolImp = new Audio("../../estudiar/roma/audio/r20.mp3");
+const btnPlayConsolImp = document.createElement("div");
+btnPlayConsolImp.title = "Escuchar audio: Consolidación del Imperio";
+btnPlayConsolImp.style.cssText = "position:absolute;left:5670px;top:170px;width:34px;height:34px;border-radius:50%;background:#ff8c00;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;box-shadow:0 0 8px rgba(255,140,0,0.7);transition:transform 0.2s;";
+btnPlayConsolImp.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14" fill="#1a6bbf"/></svg>';
+let playingConsolImp = false;
+btnPlayConsolImp.addEventListener("click", () => {
+    if (playingConsolImp) {
+        audioConsolImp.pause();
+        audioConsolImp.currentTime = 0;
+        btnPlayConsolImp.style.background = "#ff8c00";
+        playingConsolImp = false;
+    } else {
+        audioConsolImp.play();
+        btnPlayConsolImp.style.background = "#cc6f00";
+        playingConsolImp = true;
+    }
+});
+audioConsolImp.addEventListener("ended", () => {
+    btnPlayConsolImp.style.background = "#ff8c00";
+    playingConsolImp = false;
+});
+timeline.appendChild(btnPlayConsolImp);
+
+
+// ===================== BOTONES DE MAPAS E INFOGRAFÍAS =====================
+// Mapa Grecia bajo "Surgimiento de las polis"
+const btnMapaGrecia = document.createElement("a");
+btnMapaGrecia.href = "../mapas/mapas-interactivos/edad-antigua/mapa3.html";
+btnMapaGrecia.target = "_blank";
+btnMapaGrecia.style.cssText = "position:absolute;left:1230px;top:245px;width:165px;padding:10px 14px;background:rgba(20,20,20,0.85);border:1px solid #d4af37;border-left:4px solid #d4af37;border-radius:6px;color:#f9e294;font-size:0.75rem;font-weight:bold;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;z-index:50;cursor:pointer;";
+btnMapaGrecia.innerText = "🗺️ Ver mapa interactivo de Grecia Antigua";
+timeline.appendChild(btnMapaGrecia);
+
+// Infografías Grecia bajo "Surgimiento de las polis"
+const btnInfGrecia = document.createElement("a");
+btnInfGrecia.href = "../../estudiar/grecia/infografias/index.html";
+btnInfGrecia.target = "_blank";
+btnInfGrecia.style.cssText = "position:absolute;left:1230px;top:325px;width:165px;padding:10px 12px;background:#fff9c4;border:2px solid #b8860b;border-radius:4px;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;z-index:50;cursor:pointer;font-family:'Segoe UI',sans-serif;font-size:0.72rem;font-weight:bold;color:#2c4a7c;line-height:1.4;";
+btnInfGrecia.innerText = "Haz clic aquí para ver infografías sobre Grecia Antigua";
+timeline.appendChild(btnInfGrecia);
+
+// Infografías América bajo "Chavín en los Andes"
+const btnInfAmerica1 = document.createElement("a");
+btnInfAmerica1.href = "../../estudiar/america/infografias/index.html";
+btnInfAmerica1.target = "_blank";
+btnInfAmerica1.style.cssText = "position:absolute;left:2850px;top:310px;width:165px;padding:10px 12px;background:#fff9c4;border:2px solid #b8860b;border-radius:4px;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;z-index:50;cursor:pointer;font-family:'Segoe UI',sans-serif;font-size:0.72rem;font-weight:bold;color:#2c4a7c;line-height:1.4;";
+btnInfAmerica1.innerText = "Haz clic aquí para ver infografías sobre América Antigua";
+timeline.appendChild(btnInfAmerica1);
+
+// Infografías América bajo "Teotihuacán"
+const btnInfAmerica2 = document.createElement("a");
+btnInfAmerica2.href = "../../estudiar/america/infografias/index.html";
+btnInfAmerica2.target = "_blank";
+btnInfAmerica2.style.cssText = "position:absolute;left:3795px;top:310px;width:165px;padding:10px 12px;background:#fff9c4;border:2px solid #b8860b;border-radius:4px;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;z-index:50;cursor:pointer;font-family:'Segoe UI',sans-serif;font-size:0.72rem;font-weight:bold;color:#2c4a7c;line-height:1.4;";
+btnInfAmerica2.innerText = "Haz clic aquí para ver infografías sobre América Antigua";
+timeline.appendChild(btnInfAmerica2);
+
+// Infografías Roma bajo "Guerras Púnicas"
+const btnInfRoma1 = document.createElement("a");
+btnInfRoma1.href = "../../estudiar/roma/infografias/index.html";
+btnInfRoma1.target = "_blank";
+btnInfRoma1.style.cssText = "position:absolute;left:4470px;top:245px;width:165px;padding:10px 12px;background:#fff9c4;border:2px solid #b8860b;border-radius:4px;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;z-index:50;cursor:pointer;font-family:'Segoe UI',sans-serif;font-size:0.72rem;font-weight:bold;color:#2c4a7c;line-height:1.4;";
+btnInfRoma1.innerText = "Haz clic aquí para ver infografías sobre Roma Antigua";
+timeline.appendChild(btnInfRoma1);
+
+// Infografías Roma bajo "Batalla de Accio"
+const btnInfRoma2 = document.createElement("a");
+btnInfRoma2.href = "../../estudiar/roma/infografias/index.html";
+btnInfRoma2.target = "_blank";
+btnInfRoma2.style.cssText = "position:absolute;left:5415px;top:310px;width:165px;padding:10px 12px;background:#fff9c4;border:2px solid #b8860b;border-radius:4px;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;z-index:50;cursor:pointer;font-family:'Segoe UI',sans-serif;font-size:0.72rem;font-weight:bold;color:#2c4a7c;line-height:1.4;";
+btnInfRoma2.innerText = "Haz clic aquí para ver infografías sobre Roma Antigua";
+timeline.appendChild(btnInfRoma2);
+
+// Ajuste del ancho total del timeline
+const totalWidth = startX + (eventos.length - 1) * step + 200;
+timeline.style.width = totalWidth + "px";
+timeline.style.minWidth = totalWidth + "px";
+
+// Ícono lca.ico con latido y título bajo "Olmecas en Mesoamérica"
+const icoOlmecas = document.createElement("a");
+icoOlmecas.href = "https://www.youtube.com/watch?v=ZgjDzUY0LXU";
+icoOlmecas.target = "_blank";
+icoOlmecas.style.cssText = "position:absolute;left:810px;top:215px;display:flex;align-items:center;gap:8px;cursor:pointer;z-index:50;text-decoration:none;";
+const imgOlmecas = document.createElement("img");
+imgOlmecas.src = "lca.ico";
+imgOlmecas.className = "ico-latido";
+imgOlmecas.style.cssText = "width:32px;height:32px;object-fit:contain;";
+const tituloOlmecas = document.createElement("span");
+tituloOlmecas.className = "ico-titulo";
+tituloOlmecas.innerHTML = "Recreación con IA de<br>la civilización olmeca";
+icoOlmecas.appendChild(imgOlmecas);
+icoOlmecas.appendChild(tituloOlmecas);
+timeline.appendChild(icoOlmecas);
+
+// Ícono lca.ico: "Recreación con IA / de Cartago"
+const icoFundCartago = document.createElement("a");
+icoFundCartago.href = "https://www.youtube.com/watch?v=CnOIg_BXLEQ&t=10s";
+icoFundCartago.target = "_blank";
+icoFundCartago.style.cssText = "position:absolute;left:1080px;top:215px;display:flex;align-items:center;gap:8px;cursor:pointer;z-index:50;text-decoration:none;";
+const imgFundCartago = document.createElement("img");
+imgFundCartago.src = "lca.ico";
+imgFundCartago.className = "ico-latido";
+imgFundCartago.style.cssText = "width:32px;height:32px;object-fit:contain;";
+const tituloFundCartago = document.createElement("span");
+tituloFundCartago.className = "ico-titulo";
+tituloFundCartago.innerHTML = "Recreación con IA<br>de Cartago";
+icoFundCartago.appendChild(imgFundCartago);
+icoFundCartago.appendChild(tituloFundCartago);
+timeline.appendChild(icoFundCartago);
+
+// Ícono lca.ico: "Video en YT sobre / los juegos olímpicos"
+const icoJuegOlimpicos = document.createElement("a");
+icoJuegOlimpicos.href = "https://www.youtube.com/watch?v=cmMNN6AZlFo";
+icoJuegOlimpicos.target = "_blank";
+icoJuegOlimpicos.style.cssText = "position:absolute;left:1350px;top:170px;display:flex;align-items:center;gap:8px;cursor:pointer;z-index:50;text-decoration:none;";
+const imgJuegOlimpicos = document.createElement("img");
+imgJuegOlimpicos.src = "lca.ico";
+imgJuegOlimpicos.className = "ico-latido";
+imgJuegOlimpicos.style.cssText = "width:32px;height:32px;object-fit:contain;";
+const tituloJuegOlimpicos = document.createElement("span");
+tituloJuegOlimpicos.className = "ico-titulo";
+tituloJuegOlimpicos.innerHTML = "Video en YT sobre<br>los juegos olímpicos";
+icoJuegOlimpicos.appendChild(imgJuegOlimpicos);
+icoJuegOlimpicos.appendChild(tituloJuegOlimpicos);
+timeline.appendChild(icoJuegOlimpicos);
+
+// Ícono lca.ico: "Recreando con IA / Chavín de Huantar"
+const icoChavin = document.createElement("a");
+icoChavin.href = "https://www.youtube.com/watch?v=_FrmG3xGNPk";
+icoChavin.target = "_blank";
+icoChavin.style.cssText = "position:absolute;left:2835px;top:215px;display:flex;align-items:center;gap:8px;cursor:pointer;z-index:50;text-decoration:none;";
+const imgChavin = document.createElement("img");
+imgChavin.src = "lca.ico";
+imgChavin.className = "ico-latido";
+imgChavin.style.cssText = "width:32px;height:32px;object-fit:contain;";
+const tituloChavin = document.createElement("span");
+tituloChavin.className = "ico-titulo";
+tituloChavin.innerHTML = "Recreando con IA<br>Chavín de Huantar";
+icoChavin.appendChild(imgChavin);
+icoChavin.appendChild(tituloChavin);
+timeline.appendChild(icoChavin);
+
+// Ícono lca.ico: "Recreando con IA / el Partenón"
+const icoPartenon = document.createElement("a");
+icoPartenon.href = "https://www.youtube.com/watch?v=lw7P1xe1aqU";
+icoPartenon.target = "_blank";
+icoPartenon.style.cssText = "position:absolute;left:3510px;top:170px;display:flex;align-items:center;gap:8px;cursor:pointer;z-index:50;text-decoration:none;";
+const imgPartenon = document.createElement("img");
+imgPartenon.src = "lca.ico";
+imgPartenon.className = "ico-latido";
+imgPartenon.style.cssText = "width:32px;height:32px;object-fit:contain;";
+const tituloPartenon = document.createElement("span");
+tituloPartenon.className = "ico-titulo";
+tituloPartenon.innerHTML = "Recreando con IA<br>el Partenón";
+icoPartenon.appendChild(imgPartenon);
+icoPartenon.appendChild(tituloPartenon);
+timeline.appendChild(icoPartenon);
+
+// Ícono lca.ico: "Recreando con IA / Teotihuacán"
+const icoTeotihuacan2 = document.createElement("a");
+icoTeotihuacan2.href = "https://www.youtube.com/watch?v=OsWO47iWPek";
+icoTeotihuacan2.target = "_blank";
+icoTeotihuacan2.style.cssText = "position:absolute;left:3780px;top:215px;display:flex;align-items:center;gap:8px;cursor:pointer;z-index:50;text-decoration:none;";
+const imgTeotihuacan2 = document.createElement("img");
+imgTeotihuacan2.src = "lca.ico";
+imgTeotihuacan2.className = "ico-latido";
+imgTeotihuacan2.style.cssText = "width:32px;height:32px;object-fit:contain;";
+const tituloTeotihuacan2 = document.createElement("span");
+tituloTeotihuacan2.className = "ico-titulo";
+tituloTeotihuacan2.innerHTML = "Recreando con IA<br>Teotihuacán";
+icoTeotihuacan2.appendChild(imgTeotihuacan2);
+icoTeotihuacan2.appendChild(tituloTeotihuacan2);
+timeline.appendChild(icoTeotihuacan2);
+
+// Ícono lca.ico: "Recreando con IA / la cultura mochica"
+const icoMochica = document.createElement("a");
+icoMochica.href = "https://www.youtube.com/watch?v=XanEViQY7iw";
+icoMochica.target = "_blank";
+icoMochica.style.cssText = "position:absolute;left:4320px;top:215px;display:flex;align-items:center;gap:8px;cursor:pointer;z-index:50;text-decoration:none;";
+const imgMochica = document.createElement("img");
+imgMochica.src = "lca.ico";
+imgMochica.className = "ico-latido";
+imgMochica.style.cssText = "width:32px;height:32px;object-fit:contain;";
+const tituloMochica = document.createElement("span");
+tituloMochica.className = "ico-titulo";
+tituloMochica.innerHTML = "Recreando con IA<br>la cultura mochica";
+icoMochica.appendChild(imgMochica);
+icoMochica.appendChild(tituloMochica);
+timeline.appendChild(icoMochica);
+
+// Ícono lca.ico: "Video de YT sobre César / y el cruce del Rubicón"
+const icoCesarRubicon = document.createElement("a");
+icoCesarRubicon.href = "https://www.youtube.com/watch?v=mjfM8ZUHVJg";
+icoCesarRubicon.target = "_blank";
+icoCesarRubicon.style.cssText = "position:absolute;left:5130px;top:210px;display:flex;align-items:center;gap:8px;cursor:pointer;z-index:50;text-decoration:none;";
+const imgCesarRubicon = document.createElement("img");
+imgCesarRubicon.src = "lca.ico";
+imgCesarRubicon.className = "ico-latido";
+imgCesarRubicon.style.cssText = "width:32px;height:32px;object-fit:contain;";
+const tituloCesarRubicon = document.createElement("span");
+tituloCesarRubicon.className = "ico-titulo";
+tituloCesarRubicon.innerHTML = "Video de YT sobre César<br>y el cruce del Rubicón";
+icoCesarRubicon.appendChild(imgCesarRubicon);
+icoCesarRubicon.appendChild(tituloCesarRubicon);
+timeline.appendChild(icoCesarRubicon);
+
+// ===================== NAVEGACIÓN SCROLL =====================
+const NEXT_CRONO = "cronos4.html";
+const PREV_CRONO = "cronos2.html";
+
+const leftBtn = document.getElementById("scrollLeft");
+const rightBtn = document.getElementById("scrollRight");
+const scrollStep = 300;
+
+leftBtn.addEventListener("click", () => {
+    if (wrapper.scrollLeft <= 10 && PREV_CRONO) {
+        window.location.href = PREV_CRONO;
+    } else {
+        wrapper.scrollLeft -= scrollStep;
+    }
+});
+rightBtn.addEventListener("click", () => {
+    const tl = document.getElementById("timeline");
+    const maxScroll = tl.scrollWidth - wrapper.getBoundingClientRect().width + 120;
+    const alFinal = wrapper.scrollLeft >= maxScroll - 20;
+    if (alFinal && NEXT_CRONO) {
+        window.location.href = NEXT_CRONO;
+    } else {
+        wrapper.scrollLeft += scrollStep;
+    }
+});
+
+// Indicador visual en botón > cuando está al final
+wrapper.addEventListener("scroll", () => {
+    const alFinal = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 10;
+    rightBtn.style.background = alFinal ? "rgba(212,175,55,0.5)" : "rgba(0,0,0,0.7)";
+    rightBtn.title = alFinal ? "Ir a Cronos 4 →" : "";
+});
+let isDown = false;
+let startXpos;
+let scrollLeftPos;
+
+wrapper.addEventListener("mousedown", (e) => {
+    isDown = true;
+    startXpos = e.pageX - wrapper.offsetLeft;
+    scrollLeftPos = wrapper.scrollLeft;
+});
+wrapper.addEventListener("mouseleave", () => { isDown = false; });
+wrapper.addEventListener("mouseup", () => { isDown = false; });
+wrapper.addEventListener("mousemove", (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - wrapper.offsetLeft;
+    const walk = (x - startXpos) * 1.5;
+    wrapper.scrollLeft = scrollLeftPos - walk;
+});
+
+// Soporte táctil para drag en mobile
+let touchStartX;
+let touchScrollLeft;
+wrapper.addEventListener("touchstart", (e) => {
+    touchStartX = e.touches[0].pageX - wrapper.offsetLeft;
+    touchScrollLeft = wrapper.scrollLeft;
+}, { passive: true });
+wrapper.addEventListener("touchmove", (e) => {
+    const x = e.touches[0].pageX - wrapper.offsetLeft;
+    const walk = (x - touchStartX) * 1.5;
+    wrapper.scrollLeft = touchScrollLeft - walk;
+}, { passive: true });
+
+// ===================== MODAL =====================
+function abrirModalImagen(src) {
+    document.getElementById("modalImagenImg").src = src;
+    document.getElementById("modalImagen").style.display = "flex";
+}
+function cerrarModalImagen() {
+    document.getElementById("modalImagen").style.display = "none";
+}
+function abrirModal(fecha, titulo, texto) {
+    document.getElementById("modalFecha").innerText = fecha;
+    document.getElementById("modalTitulo").innerText = titulo;
+    document.getElementById("modalTexto").innerText = texto;
+    document.getElementById("modal").style.display = "flex";
+}
+function cerrarModal() {
+    document.getElementById("modal").style.display = "none";
+}
+// Cerrar modal con tecla ESC
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { cerrarModal(); cerrarModalImagen(); }
+});
+
+// ===================== CONTROL DE AUDIO ÚNICO =====================
+const todosLosAudios = [
+    { audio: audioCrisisBronce, btn: btnPlayCrisisBronce },
+    { audio: audioExpHierro, btn: btnPlayExpHierro },
+    { audio: audioDeclMicenico, btn: btnPlayDeclMicenico },
+    { audio: audioComHebreas, btn: btnPlayComHebreas },
+    { audio: audioReinoIsrael, btn: btnPlayReinoIsrael },
+    { audio: audioOlmecas, btn: btnPlayOlmecas },
+    { audio: audioExpFenicia, btn: btnPlayExpFenicia },
+    { audio: audioFundCartago, btn: btnPlayFundCartago },
+    { audio: audioSurgPolis, btn: btnPlaySurgPolis },
+    { audio: audioColonGriega, btn: btnPlayColonGriega },
+    { audio: audioFundRoma, btn: btnPlayFundRoma },
+    { audio: audioReinosAnatolia, btn: btnPlayReinosAnatolia },
+    { audio: audioImpAsirio, btn: btnPlayImpAsirio },
+    { audio: audioLegDracon, btn: btnPlayLegDracon },
+    { audio: audioFiloJonia, btn: btnPlayFiloJonia },
+    { audio: audioRefSolon, btn: btnPlayRefSolon },
+    { audio: audioImpPersa, btn: btnPlayImpPersa },
+    { audio: audioRepRomana, btn: btnPlayRepRomana },
+    { audio: audioRefClistenes, btn: btnPlayRefClistenes },
+    { audio: audioChavin, btn: btnPlayChavin },
+    { audio: audioGuerMedicas, btn: btnPlayGuerMedicas },
+    { audio: audioBatMaraton, btn: btnPlayBatMaraton },
+    { audio: audioTermópilas, btn: btnPlayTermópilas },
+    { audio: audioSocrates, btn: btnPlaySocrates },
+    { audio: audioGuerPelopones, btn: btnPlayGuerPelopones },
+    { audio: audioTeotihuacan, btn: btnPlayTeotihuacan },
+    { audio: audioAcadPlaton, btn: btnPlayAcadPlaton },
+    { audio: audioAlejMagno, btn: btnPlayAlejMagno },
+    { audio: audioReinosHelen, btn: btnPlayReinosHelen },
+    { audio: audioCultMochica, btn: btnPlayCultMochica },
+    { audio: audioGuerPunicas, btn: btnPlayGuerPunicas },
+    { audio: audioUnifChina, btn: btnPlayUnifChina },
+    { audio: audioRutasComercial, btn: btnPlayRutasComercial },
+    { audio: audioCrisisRepRom, btn: btnPlayCrisisRepRom },
+    { audio: audioAsesinatoCesar, btn: btnPlayAsesinatoCesar },
+    { audio: audioBatAccio, btn: btnPlayBatAccio },
+    { audio: audioAugusto, btn: btnPlayAugusto },
+    { audio: audioConsolImp, btn: btnPlayConsolImp },
+];
+function detenerTodosExcepto(audioActual) {
+    todosLosAudios.forEach(item => {
+        if (item.audio !== audioActual) {
+            item.audio.pause();
+            item.audio.currentTime = 0;
+            item.btn.style.background = "#ff8c00";
+        }
+    });
+}
+todosLosAudios.forEach(item => {
+    item.btn.addEventListener("click", () => {
+        detenerTodosExcepto(item.audio);
+    }, true);
+});
+</script>
